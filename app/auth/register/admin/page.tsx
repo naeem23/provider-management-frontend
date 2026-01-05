@@ -1,23 +1,26 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
+  const searchParams = useSearchParams()
+  const providerId = searchParams.get('providerId')
   const router = useRouter()
 
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
+    confirm_password: '',
   })
 
   const [errors, setErrors] = useState({
     username: '',
-    password: ''
+    password: '',
+    confirm_password: '',
   })
 
   const [loading, setLoading] = useState(false)
@@ -26,7 +29,8 @@ export default function LoginPage() {
   const validateForm = () => {
     const newErrors = {
       username: '',
-      password: ''
+      password: '',
+      confirm_password: ''
     }
     let isValid = true
 
@@ -41,8 +45,13 @@ export default function LoginPage() {
     if (!formData.password) {
       newErrors.password = 'Password is required'
       isValid = false
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
+      isValid = false
+    }
+    
+    if (formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = 'Password not matched'
       isValid = false
     }
 
@@ -78,7 +87,7 @@ export default function LoginPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/token/`, 
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/providers/providers/register-admin/`, 
         {
             method: 'POST',
             headers: {
@@ -86,7 +95,8 @@ export default function LoginPage() {
             },
             body: JSON.stringify({
                 username: formData.username,
-                password: formData.password
+                password: formData.password,
+                provider_id: providerId
             }),
         }
       )
@@ -102,7 +112,15 @@ export default function LoginPage() {
         router.push('/dashboard')
       } else {
         // Handle error response
-        setApiError(data.detail || 'Invalid credentials. Please try again.')
+        if (data?.username) {
+            setApiError(data?.username?.[0] || 'Username already exists.')
+        } else if (data?.provider_id) {
+            setApiError(data?.provider_id?.[0] || 'Provider admin already exists.')
+        } else if (data?.password) {
+            setApiError(data?.password?.[0] || 'Password validation failed.')
+        } else {
+            setApiError('Signup failed. Please try again.')
+        }
       }
     } catch (error) {
       setApiError('Network error. Please check your connection and try again.')
@@ -116,8 +134,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold">Welcome Back</h2>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
+          <h2 className="text-3xl font-bold">Provider Admin</h2>
+          <p className="mt-2 text-gray-600">Register as a provider admin</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow">
@@ -129,7 +147,7 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Username *</Label>
               <Input
                 id="username"
                 name="username"
@@ -145,7 +163,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Password *</Label>
               <Input
                 id="password"
                 name="password"
@@ -159,6 +177,22 @@ export default function LoginPage() {
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
               )}
             </div>
+
+            <div>
+              <Label htmlFor="confirm_password">Confirm Password *</Label>
+              <Input
+                id="confirm_password"
+                name="confirm_password"
+                type="password"
+                value={formData.confirm_password}
+                onChange={handleChange}
+                className={`mt-1 ${errors.confirm_password ? 'border-red-500' : ''}`}
+                disabled={loading}
+              />
+              {errors.confirm_password && (
+                <p className="mt-1 text-sm text-red-600">{errors.confirm_password}</p>
+              )}
+            </div>
           </div>
 
           <Button 
@@ -166,20 +200,8 @@ export default function LoginPage() {
             className="w-full cursor-pointer"
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Signing up...' : 'Sign Up'}
           </Button>
-
-          <div className="text-center text-sm">
-            <p className="text-gray-600">
-              Don't have an account?{' '}
-              <Link 
-                href="/auth/register" 
-                className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
-              >
-                Register here
-              </Link>
-            </p>
-          </div>
         </form>
       </div>
     </div>
