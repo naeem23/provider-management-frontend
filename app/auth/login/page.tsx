@@ -9,17 +9,14 @@ import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
   const router = useRouter()
-
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   })
-
   const [errors, setErrors] = useState({
     username: '',
     password: ''
   })
-
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
 
@@ -41,8 +38,8 @@ export default function LoginPage() {
     if (!formData.password) {
       newErrors.password = 'Password is required'
       isValid = false
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
       isValid = false
     }
 
@@ -56,7 +53,6 @@ export default function LoginPage() {
       ...prev,
       [name]: value
     }))
-    // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({
         ...prev,
@@ -78,16 +74,16 @@ export default function LoginPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/token/`, 
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/token/`,
         {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: formData.username,
-                password: formData.password
-            }),
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: formData.username,
+            password: formData.password
+          })
         }
       )
 
@@ -98,10 +94,16 @@ export default function LoginPage() {
         localStorage.setItem('access_token', data.access)
         localStorage.setItem('refresh_token', data.refresh)
         
-        // Redirect to dashboard or home
-        router.push('/dashboard')
+        // Set cookie for middleware (expires in 1 day)
+        const expires = new Date()
+        expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000)
+        document.cookie = `access_token=${data.access}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+        
+        // Small delay to ensure cookie is set before redirect
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 100)
       } else {
-        // Handle error response
         setApiError(data.detail || 'Invalid credentials. Please try again.')
       }
     } catch (error) {
