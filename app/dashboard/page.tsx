@@ -5,12 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Bell, User, LogOut, Users, UserPlus, Settings } from 'lucide-react'
 import { fetchWithAuth, logout } from '@/lib/auth'
+import { UserData } from '@/types/user'
 
-interface UserData {
-  username: string
-  email: string
-  role: string
-}
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -30,6 +26,7 @@ export default function DashboardPage() {
       if (response.ok) {
         const data = await response.json()
         setUser(data)
+        localStorage.setItem('user', JSON.stringify(data))
       } else {
         logout()
       }
@@ -77,49 +74,6 @@ export default function DashboardPage() {
   const isProviderAdmin = user.role === 'PROVIDER_ADMIN'
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white border-b border-gray-200 px-6 py-3">
-        <div className="flex items-center justify-between">
-          {/* Left side - User info */}
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-medium text-gray-800">{user.username}</span>
-            </div>
-
-            {/* Notifications */}
-            <div className="relative cursor-pointer">
-              <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800" />
-              {notificationCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {notificationCount}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Right side - User role and logout */}
-          <div className="flex items-center space-x-4">
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-              {user.role}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="cursor-pointer"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-8">Dashboard</h1>
 
@@ -175,7 +129,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </div>
   )
 }
 
