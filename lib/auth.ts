@@ -89,6 +89,7 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}): Pro
 export const logout = () => {
   localStorage.removeItem('access_token')
   localStorage.removeItem('refresh_token')
+  localStorage.removeItem('user')
   document.cookie = 'access_token=; path=/; max-age=0'
   window.location.href = '/auth/login'
 }
