@@ -118,13 +118,7 @@ export default function DashboardPage() {
               icon={<Settings className="w-6 h-6" />}
               title="Account Settings"
               description="Manage your account information"
-              onClick={() => router.push('/dashboard/settings')}
-            />
-            <ActionCard
-              icon={<User className="w-6 h-6" />}
-              title="Profile"
-              description="View and edit your profile"
-              onClick={() => router.push('/dashboard/profile')}
+              onClick={() => router.push('/dashboard/account-settings')}
             />
           </div>
         </div>

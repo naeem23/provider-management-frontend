@@ -195,7 +195,7 @@ export default function CreateUserPage() {
         // Redirect after 2 seconds
         setTimeout(() => {
           router.push('/dashboard/users')
-        }, 2000)
+        }, 500)
       } else {
         if (data.username) {
           setApiError(data.username[0] || 'Username already exists')
