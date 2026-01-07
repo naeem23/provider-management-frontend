@@ -1,4 +1,4 @@
-import { FlowableTask } from "@/types/dashboard";
+import { ActiveOrder, FlowableTask, SubmittedOffer } from "@/types/dashboard";
 import { CheckCircle, Clock, FileText, Users } from "lucide-react";
 
 export const metrics = [
@@ -8,7 +8,8 @@ export const metrics = [
     { label: "This Month's Wins", value: 8, icon: CheckCircle, color: 'bg-purple-500' }
 ];
 
-export const flowableTasks = [
+
+export const flowableTasks: FlowableTask[] = [
     {
       id: 'SR-2024-001',
       title: 'Senior Java Developer for Banking Platform',
@@ -36,9 +37,9 @@ export const flowableTasks = [
       priority: 'high',
       requiredSkills: ['Figma', 'User Research', 'Prototyping']
     }
-] satisfies FlowableTask[];
+];
 
-export const submittedOffers = [
+export const submittedOffers: SubmittedOffer[] = [
     {
       id: 'OFF-001',
       requestId: 'SR-2024-005',
@@ -59,7 +60,7 @@ export const submittedOffers = [
     }
 ];
 
-export const activeOrders = [
+export const activeOrders: ActiveOrder[] = [
     {
       id: 'SO-2024-012',
       specialist: 'Michael Chen',
