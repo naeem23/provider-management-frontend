@@ -1,6 +1,6 @@
 'use client';
 
-import MetricCard from '@/components/supplier/metric-card';
+import MetricCard from '@/components/metric-card';
 import TabContent from '@/components/supplier/tab-content';
 import TabNavigation from '@/components/supplier/tab-navigation';
 import { activeOrders, flowableTasks, metrics, submittedOffers } from '@/lib/dummy-data';

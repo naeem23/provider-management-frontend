@@ -4,7 +4,7 @@ import { ActiveOrder, FlowableTask, SubmittedOffer, TabType } from '@/types/dash
 import TaskCard from './task-card';
 import OfferCard from './offer-card';
 import OrderCard from './order-card';
-import EmptyState from './empty-state';
+import EmptyState from '../empty-state';
 
 interface TabContentProps {
   activeTab: TabType;

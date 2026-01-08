@@ -1,13 +1,35 @@
-import { ActiveOrder, FlowableTask, SubmittedOffer } from "@/types/dashboard";
-import { CheckCircle, Clock, FileText, Users } from "lucide-react";
+import { ActiveContract, ActiveOrder, ActivityLog, FlowableTask, Metric, NegotiationTask, PendingApproval, PublishedContract, SubmittedOffer } from "@/types/dashboard";
+import { Specialist, UserAccount } from "@/types/user";
+import { Activity, AlertTriangle, CheckCircle, Clock, FileText, TrendingUp, Users } from "lucide-react";
 
-export const metrics = [
+export const metrics: Metric[] = [
     { label: 'Active Service Orders', value: 12, icon: FileText, color: 'bg-blue-500' },
     { label: 'Pending Offers', value: 5, icon: Clock, color: 'bg-yellow-500' },
     { label: 'Available Specialists', value: 18, icon: Users, color: 'bg-green-500' },
     { label: "This Month's Wins", value: 8, icon: CheckCircle, color: 'bg-purple-500' }
 ];
 
+export const contractMetrics: Metric[] = [
+    { label: 'Active Negotiations', value: 3, icon: TrendingUp, color: 'bg-orange-500' },
+    { label: 'Pending Approvals', value: 2, icon: Clock, color: 'bg-yellow-500' },
+    { label: 'Published Contracts', value: 15, icon: FileText, color: 'bg-blue-500' },
+    { label: 'Expiring Soon', value: 4, icon: AlertTriangle, color: 'bg-red-500' }
+];
+
+export const adminMetrics = [
+    { label: 'Total Users', value: 24, icon: Users, color: 'bg-blue-500' },
+    { label: 'Total Specialists', value: 142, icon: Users, color: 'bg-purple-500' },
+    { label: 'Active Specialists', value: 98, icon: CheckCircle, color: 'bg-green-500' },
+    { label: 'Recent Activity', value: 47, icon: Activity, color: 'bg-orange-500' }
+];
+
+export const activityLogs: ActivityLog[] = [
+    { id: 'L001', user: 'Max Müller', action: 'submitted an offer', timestamp: '2 hours ago', details: 'Offer for SR-2024-001 - Senior Java Developer' },
+    { id: 'L002', user: 'Anna Schmidt', action: 'accepted contract terms', timestamp: '3 hours ago', details: 'Contract CNT-2024-008 - IT Consulting Services' },
+    { id: 'L003', user: 'Thomas Weber', action: 'updated specialist profile', timestamp: '5 hours ago', details: 'Updated John Smith - Added Spring Boot certification' },
+    { id: 'L004', user: 'Michael Becker', action: 'created new user account', timestamp: '1 day ago', details: 'Created account for Lisa Wagner - Supplier Representative' },
+    { id: 'L005', user: 'Max Müller', action: 'viewed service request', timestamp: '1 day ago', details: 'Viewed SR-2024-005 - DevOps Engineer' },
+];
 
 export const flowableTasks: FlowableTask[] = [
     {
@@ -79,4 +101,113 @@ export const activeOrders: ActiveOrder[] = [
       endDate: '2024-02-28',
       daysRemaining: 52
     }
+];
+
+export const negotiationTasks: NegotiationTask[] = [
+    {
+      id: 'CNT-2024-008',
+      title: 'IT Consulting Services Framework Agreement',
+      supplier: 'TechConsult GmbH',
+      offeredRate: 850,
+      targetRate: 780,
+      domain: 'Technology',
+      offerDeadline: '3 days',
+      priority: 'high',
+      terms: 'Standard terms with extended warranty clause',
+      matchScore: 92
+    },
+    {
+      id: 'CNT-2024-012',
+      title: 'Digital Transformation Consulting',
+      supplier: 'Digital Solutions AG',
+      offeredRate: 920,
+      targetRate: 850,
+      domain: 'Consulting',
+      offerDeadline: '5 days',
+      priority: 'medium',
+      terms: 'Negotiating payment terms and deliverable schedule',
+      matchScore: 88
+    }
+];
+
+export const pendingApprovals: PendingApproval[] = [
+    {
+      id: 'CNT-2024-015',
+      title: 'Cloud Infrastructure Services',
+      supplier: 'CloudTech Solutions',
+      agreedRate: 780,
+      startDate: '2024-02-01',
+      endDate: '2025-02-01',
+      scope: 'AWS and Azure cloud management',
+      status: 'awaiting_final_approval'
+    }
+];
+
+export const publishedContracts: PublishedContract[] = [
+    {
+      id: 'CNT-2024-001',
+      title: 'Software Development Services',
+      offersReceived: 8,
+      offerDeadline: '2024-01-15',
+      daysLeft: 8,
+      domains: ['Technology', 'Development'],
+      status: 'open'
+    },
+    {
+      id: 'CNT-2024-003',
+      title: 'Business Analysis Framework',
+      offersReceived: 5,
+      offerDeadline: '2024-01-20',
+      daysLeft: 13,
+      domains: ['Business', 'Consulting'],
+      status: 'open'
+    },
+    {
+      id: 'CNT-2024-005',
+      title: 'Project Management Services',
+      offersReceived: 12,
+      offerDeadline: '2024-01-12',
+      daysLeft: 5,
+      domains: ['Consulting', 'Project Management'],
+      status: 'open'
+    }
+];
+
+export const activeContracts: ActiveContract[] = [
+    {
+      id: 'CNT-2023-089',
+      title: 'Enterprise Application Development',
+      supplier: 'DevPro International',
+      startDate: '2023-06-01',
+      endDate: '2024-06-30',
+      daysRemaining: 175,
+      consumption: 68,
+      activeRequests: 4
+    },
+    {
+      id: 'CNT-2023-095',
+      title: 'IT Security Consulting',
+      supplier: 'SecureIT Solutions',
+      startDate: '2023-09-01',
+      endDate: '2024-08-31',
+      daysRemaining: 237,
+      consumption: 45,
+      activeRequests: 2
+    }
+];
+
+export const users: UserAccount[] = [
+    { id: 'U001', name: 'Max Müller', email: 'max.mueller@company.de', role: 'SUPPLIER_REP', status: 'active', lastLogin: '2024-01-08 09:30' },
+    { id: 'U002', name: 'Anna Schmidt', email: 'anna.schmidt@company.de', role: 'CONTRACT_COORDINATOR', status: 'active', lastLogin: '2024-01-08 10:15' },
+    { id: 'U003', name: 'Thomas Weber', email: 'thomas.weber@company.de', role: 'SUPPLIER_REP', status: 'active', lastLogin: '2024-01-07 16:45' },
+    { id: 'U004', name: 'Sarah Fischer', email: 'sarah.fischer@company.de', role: 'SUPPLIER_REP', status: 'inactive', lastLogin: '2024-01-05 14:20' },
+    { id: 'U005', name: 'Michael Becker', email: 'michael.becker@company.de', role: 'PROVIDER_ADMIN', status: 'active', lastLogin: '2024-01-08 08:00' },
+];
+
+export const specialists: Specialist[] = [
+    { id: 'S001', name: 'John Smith', roles: ['Senior Developer', 'Tech Lead'], performanceGrade: 'A', status: 'assigned', averageDailyRate: 850, activeAssignments: 1 },
+    { id: 'S002', name: 'Emma Wilson', roles: ['Frontend Developer'], performanceGrade: 'A', status: 'assigned', averageDailyRate: 720, activeAssignments: 1 },
+    { id: 'S003', name: 'Michael Chen', roles: ['Solution Architect', 'Senior Developer'], performanceGrade: 'B', status: 'available', averageDailyRate: 920, activeAssignments: 0 },
+    { id: 'S004', name: 'Sarah Johnson', roles: ['Data Analyst'], performanceGrade: 'A', status: 'available', averageDailyRate: 680, activeAssignments: 0 },
+    { id: 'S005', name: 'David Brown', roles: ['Project Manager'], performanceGrade: 'C', status: 'assigned', averageDailyRate: 750, activeAssignments: 1 },
 ];

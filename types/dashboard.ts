@@ -17,6 +17,19 @@ export interface FlowableTask {
   requiredSkills: string[];
 }
 
+export interface NegotiationTask {
+  id: string;
+  title: string;
+  supplier: string;
+  offeredRate: number;
+  targetRate: number;
+  domain: string;
+  offerDeadline: string;
+  priority: 'high' | 'medium' | 'low';
+  terms: string;
+  matchScore: number;
+}
+
 export interface SubmittedOffer {
   id: string;
   requestId: string;
@@ -38,3 +51,43 @@ export interface ActiveOrder {
 }
 
 export type TabType = 'action-required' | 'new-requests' | 'my-offers' | 'active-orders' | 'specialists';
+
+export interface PendingApproval {
+  id: string;
+  title: string;
+  supplier: string;
+  agreedRate: number;
+  startDate: string;
+  endDate: string;
+  scope: string;
+  status: string;
+}
+
+export interface PublishedContract {
+  id: string;
+  title: string;
+  offersReceived: number;
+  offerDeadline: string;
+  daysLeft: number;
+  domains: string[];
+  status: string;
+}
+
+export interface ActiveContract {
+  id: string;
+  title: string;
+  supplier: string;
+  startDate: string;
+  endDate: string;
+  daysRemaining: number;
+  consumption: number;
+  activeRequests: number;
+}
+
+export interface ActivityLog {
+  id: string;
+  user: string;
+  action: string;
+  timestamp: string;
+  details: string;
+}
