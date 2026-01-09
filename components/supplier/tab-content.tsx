@@ -43,22 +43,19 @@ const TabContent: React.FC<TabContentProps> = ({
       )}
 
       {activeTab === 'active-orders' && (
-        <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Active Service Orders</h3>
-          <div className="space-y-4">
-            {activeOrders.map((order) => (
-              <OrderCard key={order.id} order={order} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* {activeTab === 'specialists' && (
+        // <div>
+        //   <h3 className="text-xl font-bold text-gray-900 mb-6">Active Service Orders</h3>
+        //   <div className="space-y-4">
+        //     {activeOrders.map((order) => (
+        //       <OrderCard key={order.id} order={order} />
+        //     ))}
+        //   </div>
+        // </div>
         <EmptyState 
-          icon={Users} 
-          message="Specialist availability calendar will appear here" 
+          icon={FileText} 
+          message="No active orders found." 
         />
-      )} */}
+      )}
 
       {activeTab === 'specialists' && (
         <SpecialistsTab />

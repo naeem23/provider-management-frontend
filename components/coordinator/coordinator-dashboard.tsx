@@ -3,13 +3,11 @@
 import { FileText } from 'lucide-react';
 import { NegotiationTask } from '@/types/dashboard';
 import NegotiationModal from '@/components/coordinator/negotiation-modal';
-import { activeContracts, contractMetrics, negotiationTasks, pendingApprovals, publishedContracts } from '@/lib/dummy-data';
-import MetricCard from '@/components/metric-card';
+import { negotiationTasks, pendingApprovals } from '@/lib/dummy-data';
 import NegotiationTaskCard from '@/components/coordinator/negotiation-task-card';
 import PendingApprovalCard from '@/components/coordinator/pending-approval-card';
-import PublishedContractCard from '@/components/coordinator/publish-contract-card';
-import ActiveContractCard from '@/components/coordinator/active-contract-card';
 import { useState } from 'react';
+import ActiveContractsTab from './active-contracts-tab';
 
 
 const ContractCoordinatorDashboard: React.FC = () => {
@@ -27,7 +25,7 @@ const ContractCoordinatorDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
             <div className="border-b border-gray-200">
             <nav className="flex space-x-8 px-6">
-                {['action-required', 'published-contracts', 'active-contracts', 'negotiation-history'].map((tab) => (
+                {['action-required', 'expiring-contracts', 'active-contracts', 'negotiation-history'].map((tab) => (
                 <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -57,9 +55,9 @@ const ContractCoordinatorDashboard: React.FC = () => {
                     <span className="text-sm text-gray-500">From Flowable Process Engine</span>
                     </div>
                     <div className="space-y-4">
-                    {negotiationTasks.map((task) => (
-                        <NegotiationTaskCard key={task.id} task={task} onAction={handleNegotiation} />
-                    ))}
+                        {negotiationTasks.map((task) => (
+                            <NegotiationTaskCard key={task.id} task={task} onAction={handleNegotiation} />
+                        ))}
                     </div>
                 </div>
 
@@ -74,31 +72,12 @@ const ContractCoordinatorDashboard: React.FC = () => {
                 </div>
             )}
 
-            {activeTab === 'published-contracts' && (
-                <div>
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">Open for Offers</h3>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                    Create New Contract
-                    </button>
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                    {publishedContracts.map((contract) => (
-                    <PublishedContractCard key={contract.id} contract={contract} />
-                    ))}
-                </div>
-                </div>
+            {activeTab === 'expiring-contracts' && (
+                <ActiveContractsTab type="expiring" />
             )}
 
             {activeTab === 'active-contracts' && (
-                <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Active Contracts</h3>
-                <div className="space-y-4">
-                    {activeContracts.map((contract) => (
-                    <ActiveContractCard key={contract.id} contract={contract} />
-                    ))}
-                </div>
-                </div>
+                <ActiveContractsTab type="active" />
             )}
 
             {activeTab === 'negotiation-history' && (
