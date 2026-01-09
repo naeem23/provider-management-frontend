@@ -12,7 +12,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
   setActiveTab, 
   actionRequiredCount 
 }) => {
-  const tabs: TabType[] = ['action-required', 'my-offers', 'active-orders', 'specialists'];
+  const tabs: TabType[] = ['action-required', 'new-requests', 'my-offers', 'active-orders', 'specialists'];
 
   const formatTabLabel = (tab: string): string => {
     return tab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');

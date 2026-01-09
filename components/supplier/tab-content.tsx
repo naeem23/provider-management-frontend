@@ -1,13 +1,10 @@
 import React from 'react';
-import { Calendar, FileText, Users } from 'lucide-react';
+import { FileText, Users } from 'lucide-react';
 import { ActiveOrder, FlowableTask, SubmittedOffer, TabType } from '@/types/dashboard';
 import TaskCard from './task-card';
 import OfferCard from './offer-card';
 import OrderCard from './order-card';
-import EmptyState from '../empty-state';
-import OffersTab from './offers-tab';
-import { specialists } from '@/lib/dummy-data';
-import SpecialistsTab from './specialists-tab';
+import EmptyState from './empty-state';
 
 interface TabContentProps {
   activeTab: TabType;
@@ -39,26 +36,39 @@ const TabContent: React.FC<TabContentProps> = ({
       )}
 
       {activeTab === 'my-offers' && (
-        <OffersTab />
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 mb-6">My Submitted Offers</h3>
+          <div className="space-y-4">
+            {submittedOffers.map((offer) => (
+              <OfferCard key={offer.id} offer={offer} />
+            ))}
+          </div>
+        </div>
       )}
 
       {activeTab === 'active-orders' && (
-        // <div>
-        //   <h3 className="text-xl font-bold text-gray-900 mb-6">Active Service Orders</h3>
-        //   <div className="space-y-4">
-        //     {activeOrders.map((order) => (
-        //       <OrderCard key={order.id} order={order} />
-        //     ))}
-        //   </div>
-        // </div>
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Active Service Orders</h3>
+          <div className="space-y-4">
+            {activeOrders.map((order) => (
+              <OrderCard key={order.id} order={order} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'new-requests' && (
         <EmptyState 
           icon={FileText} 
-          message="No active orders found." 
+          message="New service requests will appear here" 
         />
       )}
 
       {activeTab === 'specialists' && (
-        <SpecialistsTab />
+        <EmptyState 
+          icon={Users} 
+          message="Specialist availability calendar will appear here" 
+        />
       )}
     </div>
   );
