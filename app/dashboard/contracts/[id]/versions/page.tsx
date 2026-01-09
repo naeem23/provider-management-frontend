@@ -2,7 +2,7 @@ import React from 'react'
 
 const ContractVersionsPage = () => {
   return (
-    <div>ContractVersionsPage</div>
+    <div>here contract versions will be visible</div>
   )
 }
 
