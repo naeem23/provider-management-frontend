@@ -2,33 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Users, UserPlus, Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Bell, User, LogOut, Users, UserPlus, Settings } from 'lucide-react'
 import { fetchWithAuth, logout } from '@/lib/auth'
 import { UserData } from '@/types/user'
-import MetricCard from '@/components/metric-card'
-import { formatMetrics } from '@/lib/utils'
-import { Metric } from '@/types/dashboard'
-import ContractCoordinatorDashboard from '@/components/coordinator/coordinator-dashboard'
-import SupplierDashboard from '@/components/supplier/supplier-dashboard'
 
 
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<UserData | null>(null)
   const [notificationCount, setNotificationCount] = useState(0)
-  const [metrics, setMetrics] = useState<Metric[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchUserData()
     fetchUnreadNotification()
   }, [])
-
-  useEffect(() => {
-    if (user) {
-      fetchMetrics()
-    }
-  }, [user])
 
   const fetchUserData = async () => {
     try {
@@ -66,31 +55,8 @@ export default function DashboardPage() {
     }
   }
 
-  const fetchMetrics = async () => {
-    try {
-      let endpoint = ''
-
-      // Determine which API endpoint to call based on user role
-      if (user?.role === 'PROVIDER_ADMIN') {
-        endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/providers/providers/metrics`
-      } else if (user?.role === 'SUPPLIER_REP') {
-        endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/service-offers/metrics`
-      } else if (user?.role === 'CONTRACT_COORDINATOR') {
-        endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/contracts/contracts/metrics`
-      }
-
-      if (endpoint) {
-        const response = await fetchWithAuth(endpoint)
-
-        if (response.ok) {
-          const data = await response.json()
-          const formattedMetrics = formatMetrics(data, user?.role);
-          setMetrics(formattedMetrics)
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching metrics:', error)
-    }
+  const handleLogout = () => {
+    logout()
   }
 
   if (loading) {
@@ -106,31 +72,10 @@ export default function DashboardPage() {
   }
 
   const isProviderAdmin = user.role === 'PROVIDER_ADMIN'
-  const isSupplierRep = user.role === 'SUPPLIER_REP'
-  const isCoordinator = user.role === 'CONTRACT_COORDINATOR'
 
   return (
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Welcome back, {user?.username}</h2>
-          {isProviderAdmin && (
-            <p className="text-gray-600 mt-1">Manage users, specialists, and system settings.</p>
-          )}
-          {isSupplierRep && (
-            <p className="text-gray-600 mt-1">Here's what's happening with your service requests today.</p>
-          )}
-          {isCoordinator && (
-            <p className="text-gray-600 mt-1">Manage contract negotiations and approvals.</p>
-          )}
-        </div>
-
-        {/* Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {metrics && metrics.map((metric, idx) => (
-            <MetricCard key={idx} metric={metric} />
-          ))}
-        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-8">Dashboard</h1>
 
         {/* Admin Actions - Only for PROVIDER_Admin */}
         {isProviderAdmin && (
@@ -163,14 +108,6 @@ export default function DashboardPage() {
               />
             </div>
           </div>
-        )}
-
-        {isSupplierRep && (
-            <SupplierDashboard />
-        )}
-
-        {isCoordinator && (
-          <ContractCoordinatorDashboard />
         )}
 
         {/* Common Actions - Available to all users */}
