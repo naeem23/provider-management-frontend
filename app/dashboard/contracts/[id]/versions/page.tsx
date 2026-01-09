@@ -1,9 +1,23 @@
-import React from 'react'
+import React from "react";
 
 const ContractVersionsPage = () => {
   return (
-    <div>here contract versions will be visible</div>
-  )
-}
+    <div style={{ padding: "24px" }}>
+      <h1>Contract Versions</h1>
 
-export default ContractVersionsPage
+      <ul>
+        <li>
+          <strong>v1.0</strong> — Draft · Created on 1 Jan 2025
+        </li>
+        <li>
+          <strong>v1.1</strong> — Reviewed · Updated on 9 Jan 2025
+        </li>
+        <li>
+          <strong>v2.0</strong> — Active · Approved on 15 Jan 2025
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+export default ContractVersionsPage;
