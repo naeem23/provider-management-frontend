@@ -91,3 +91,35 @@ export interface ActivityLog {
   timestamp: string;
   details: string;
 }
+
+export type OfferStatus =
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'WITHDRAWN'
+  | 'REJECTED'
+  | 'ACCEPTED';
+
+export type SpecialistType = {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone?: string;
+    specialist_code: string;
+    role_name: string;
+    experience_level: string;
+    skills: string;
+    certifications: string;
+    specialization: string;
+    avg_daily_rate: number;
+    status: string;
+    available_from: string;
+    available_until: string | null;
+    max_weekly_hours: number;
+    location: string;
+    work_mode: string;
+    language_spoken: string;
+    notes?: string;
+    created_at?: string;
+    updated_at?: string;
+}

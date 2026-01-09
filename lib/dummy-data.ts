@@ -204,10 +204,66 @@ export const users: UserAccount[] = [
     { id: 'U005', name: 'Michael Becker', email: 'michael.becker@company.de', role: 'PROVIDER_ADMIN', status: 'active', lastLogin: '2024-01-08 08:00' },
 ];
 
-export const specialists: Specialist[] = [
-    { id: 'S001', name: 'John Smith', roles: ['Senior Developer', 'Tech Lead'], performanceGrade: 'A', status: 'assigned', averageDailyRate: 850, activeAssignments: 1 },
-    { id: 'S002', name: 'Emma Wilson', roles: ['Frontend Developer'], performanceGrade: 'A', status: 'assigned', averageDailyRate: 720, activeAssignments: 1 },
-    { id: 'S003', name: 'Michael Chen', roles: ['Solution Architect', 'Senior Developer'], performanceGrade: 'B', status: 'available', averageDailyRate: 920, activeAssignments: 0 },
-    { id: 'S004', name: 'Sarah Johnson', roles: ['Data Analyst'], performanceGrade: 'A', status: 'available', averageDailyRate: 680, activeAssignments: 0 },
-    { id: 'S005', name: 'David Brown', roles: ['Project Manager'], performanceGrade: 'C', status: 'assigned', averageDailyRate: 750, activeAssignments: 1 },
+
+export const specialists = [
+  {
+    first_name: 'Michael',
+    last_name: 'Chen',
+    email: 'michael.chen@example.com',
+    phone: '+49 151 12345678',
+    specialist_code: 'SP-2024-001',
+    role_name: 'Solution Architect',
+    experience_level: 'Expert',
+    skills: ['Java', 'Spring Boot', 'Microservices', 'AWS', 'Docker', 'Kubernetes'],
+    certifications: ['AWS Solutions Architect', 'TOGAF 9'],
+    specialization: 'Cloud Architecture & Migration',
+    avg_daily_rate: 950,
+    status: 'active',
+    available_from: '2024-02-01',
+    available_until: '2024-12-31',
+    max_weekly_hours: 40,
+    location: 'Frankfurt',
+    work_mode: 'hybrid',
+    language_spoken: ['English', 'German', 'Mandarin']
+  },
+  {
+    first_name: 'Sarah',
+    last_name: 'Johnson',
+    email: 'sarah.j@example.com',
+    phone: '+49 170 98765432',
+    specialist_code: 'SP-2024-002',
+    role_name: 'Data Analyst',
+    experience_level: 'Senior',
+    skills: ['Python', 'SQL', 'Tableau', 'Power BI', 'Statistics'],
+    certifications: ['Microsoft Certified: Data Analyst'],
+    specialization: 'Business Intelligence & Analytics',
+    avg_daily_rate: 720,
+    status: 'active',
+    available_from: '2024-03-15',
+    available_until: '2024-09-30',
+    max_weekly_hours: 32,
+    location: 'Munich',
+    work_mode: 'remote',
+    language_spoken: ['English', 'German']
+  },
+  {
+    first_name: 'Emma',
+    last_name: 'Wilson',
+    email: 'emma.w@example.com',
+    phone: '+49 160 55512345',
+    specialist_code: 'SP-2024-003',
+    role_name: 'Frontend Developer',
+    experience_level: 'Mid',
+    skills: ['React', 'TypeScript', 'CSS', 'HTML', 'Jest'],
+    certifications: [],
+    specialization: 'Modern Web Applications',
+    avg_daily_rate: 650,
+    status: 'on_leave',
+    available_from: '2024-02-15',
+    available_until: '2024-08-31',
+    max_weekly_hours: 40,
+    location: 'Berlin',
+    work_mode: 'remote',
+    language_spoken: ['English']
+  }
 ];
