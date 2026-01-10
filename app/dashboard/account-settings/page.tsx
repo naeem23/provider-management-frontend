@@ -5,13 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { fetchWithAuth, logout } from '@/lib/auth'
 import { AlertTriangle, Trash2 } from 'lucide-react'
 import { UserData } from '@/types/user'
@@ -178,21 +171,6 @@ export default function AccountSettingsPage() {
     setSuccessMessage('')
   }
 
-  const handleRoleChange = (value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: value,
-    }))
-    if (errors.role) {
-      setErrors((prev) => ({
-        ...prev,
-        role: undefined,
-      }))
-    }
-    setApiError('')
-    setSuccessMessage('')
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setApiError('')
@@ -271,7 +249,7 @@ export default function AccountSettingsPage() {
     try {
       const url = userData?.role === 'PROVIDER_ADMIN' 
         ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/providers/providers/${userData?.provider_id}/` 
-        : `${process.env.NEXT_PUBLIC_API_BASE_URL}/providers/providers/${userData?.id}/`
+        : `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/users/${userData?.id}/`
 
       const response = await fetchWithAuth(url, {method: 'DELETE',})
 
@@ -354,23 +332,6 @@ export default function AccountSettingsPage() {
             <p className="mt-1 text-sm text-red-600">{errors.username}</p>
         )}
         </div>
-
-          {/* <div>
-            <Label htmlFor="role">Role *</Label>
-            <Select onValueChange={handleRoleChange} value={formData.role} disabled={loading}>
-              <SelectTrigger className={`mt-1 w-full ${errors.role ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Select a role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SUPPLIER_REPRESENTATIVE">Supplier Representative</SelectItem>
-                <SelectItem value="CONTRACT_COORDINATOR">Contract Coordinator</SelectItem>
-                <SelectItem value="PROVIDER_ADMIN">Provider Admin</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.role && (
-              <p className="mt-1 text-sm text-red-600">{errors.role}</p>
-            )}
-          </div> */}
 
         {/* First Name and Last Name */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
