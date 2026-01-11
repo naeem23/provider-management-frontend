@@ -1,8 +1,7 @@
 import { fetchWithAuth } from "@/lib/auth";
-import { ContractType } from "@/types/dashboard";
 import { useEffect, useState } from "react";
-import ExpiringContractCard from "./expiring-contract-card";
-import ActiveContractCard from "./active-contract-card";
+import ContractSummaryCard from "../contracts/contract-summary-card";
+import { ContractType } from "@/types/contract-type";
 
 
 const ActiveContractsTab = ({ type }: {type: string}) => {
@@ -33,7 +32,7 @@ const ActiveContractsTab = ({ type }: {type: string}) => {
         </div>
         <div className="grid grid-cols-1 gap-4">
             {contracts.map((contract) => (
-                <ActiveContractCard key={contract.id} contract={contract} type={type} />
+                <ContractSummaryCard key={contract.id} contract={contract} type={type} />
             ))}
         </div>
     </div>

@@ -1,13 +1,14 @@
-import { ContractVersion } from "@/app/dashboard/contracts/[id]/versions/page";
+import { ContractVersionType } from "@/types/contract-type";
 import { AlertCircle, CheckCircle, FileText } from "lucide-react";
 
 // Version Details Component
 interface VersionDetailsProps {
-  version: ContractVersion | null;
-  previousVersion?: ContractVersion;
+  version: ContractVersionType | null;
+  currentVersionId: string;
+  previousVersion?: ContractVersionType;
 }
 
-const VersionDetails: React.FC<VersionDetailsProps> = ({ version, previousVersion }) => {
+const VersionDetails: React.FC<VersionDetailsProps> = ({ version, currentVersionId, previousVersion }) => {
   if (!version) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
@@ -17,9 +18,9 @@ const VersionDetails: React.FC<VersionDetailsProps> = ({ version, previousVersio
     );
   }
 
-  const rateChange = previousVersion 
-    ? ((version.counter_rate - previousVersion.counter_rate) / previousVersion.counter_rate * 100).toFixed(1)
-    : null;
+  // const rateChange = previousVersion 
+  //   ? ((version.counter_rate - previousVersion.counter_rate) / previousVersion.counter_rate * 100).toFixed(1)
+  //   : null;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -28,16 +29,16 @@ const VersionDetails: React.FC<VersionDetailsProps> = ({ version, previousVersio
           <div>
             <div className="flex items-center space-x-3 mb-2">
               <h3 className="text-2xl font-bold text-gray-900">Version {version.version_number}</h3>
-              {version.is_current && (
+              {version.id === currentVersionId && (
                 <span className="flex items-center text-sm font-semibold bg-green-100 text-green-700 px-3 py-1 rounded">
                   <CheckCircle className="w-4 h-4 mr-1" />
                   Current Version
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-600">Created on {version.created_at}</p>
+            <p className="text-sm text-gray-600">Created on {version.created_at.split('T')[0]}</p>
           </div>
-          {version.is_current && (
+          {version.id === currentVersionId && (
             <div className="flex space-x-2">
               <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                 Accept Offer

@@ -133,3 +133,17 @@ export function formatMetrics(
     };
   });
 }
+
+export const getDaysLeft = (deadline: string) => {
+  const today = new Date();
+  const targetDate = new Date(deadline);
+
+  // Clear time part to avoid partial-day issues
+  today.setHours(0, 0, 0, 0);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const diffInMs = targetDate.getTime() - today.getTime();
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  return diffInDays > 0 ? diffInDays : 0;
+}

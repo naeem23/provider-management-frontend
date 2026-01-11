@@ -1,10 +1,10 @@
-import { ContractVersion } from "@/app/dashboard/contracts/[id]/versions/page";
+import { ContractVersionType } from "@/types/contract-type";
 import { ChevronRight, History } from "lucide-react";
 
 interface VersionTimelineProps {
-  versions: ContractVersion[];
-  selectedVersion: ContractVersion | null;
-  onSelectVersion: (version: ContractVersion) => void;
+  versions: ContractVersionType[];
+  selectedVersion: ContractVersionType | null;
+  onSelectVersion: (version: ContractVersionType) => void;
 }
 
 const VersionTimeline: React.FC<VersionTimelineProps> = ({ versions, selectedVersion, onSelectVersion }) => {
@@ -40,7 +40,7 @@ const VersionTimeline: React.FC<VersionTimelineProps> = ({ versions, selectedVer
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
                     <p className="font-semibold text-gray-900">Version {version.version_number}</p>
-                    {version.is_current && (
+                    {index === 0 && (
                       <span className="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded">
                         Current
                       </span>
@@ -49,7 +49,7 @@ const VersionTimeline: React.FC<VersionTimelineProps> = ({ versions, selectedVer
                   <div className="flex items-center space-x-4 text-xs text-gray-600">
                     <span>€{version.counter_rate}/day</span>
                     <span>•</span>
-                    <span>{version.created_at}</span>
+                    <span>{version.created_at.split('T')[0]}</span>
                   </div>
                 </div>
               </div>
