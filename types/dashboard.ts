@@ -123,26 +123,3 @@ export type SpecialistType = {
     created_at?: string;
     updated_at?: string;
 }
-
-
-export type ContractType = {
-    id: string;
-    contract_code: string;
-    title: string;
-    service_request_id: string;
-    role_name: string;
-    service_domain: string;
-    provider: string;
-    specialist_name: string;
-    offered_daily_rate: number;
-    negotiated_rate?: number;
-    expected_rate?: number;
-    status: string;
-    response_deadline: string;
-    days_left: number;
-    valid_from: string;
-    valid_to: string;
-    terms_and_condition: string;
-    created_at: string;
-    updated_at: string;
-  }

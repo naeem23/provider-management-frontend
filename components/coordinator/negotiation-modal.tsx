@@ -1,10 +1,10 @@
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  contractId?: string;
+  contractTitle?: string;
 }
 
-const NegotiationModal: React.FC<ModalProps> = ({ isOpen, onClose, contractId }) => {
+const NegotiationModal: React.FC<ModalProps> = ({ isOpen, onClose, contractTitle }) => {
   if (!isOpen) return null;
 
   return (
@@ -12,7 +12,7 @@ const NegotiationModal: React.FC<ModalProps> = ({ isOpen, onClose, contractId })
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-4">Confirm Action</h3>
         <p className="text-gray-600 mb-6">
-          Are you sure you want to proceed with this action for contract {contractId}?
+          Are you sure you want to proceed with this action for contract "{contractTitle}"?
         </p>
         <div className="flex space-x-3">
           <button
