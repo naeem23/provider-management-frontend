@@ -1,23 +1,25 @@
 import { fetchWithAuth } from '@/lib/auth';
 import { ContractType } from '@/types/contract-type';
 import { AlertCircle, Edit, Euro, FileText, MessageSquare } from 'lucide-react'
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
-export interface CounterOffer {
+export interface CounterOfferType {
   counterRate: number;
+  counterExplanation: string;
   counterTerms: string;
-  justification: string;
-  additionalTerms: string;
 }
 
 interface CounterContractFormProps {
     contract: ContractType;
-    counterOffer: CounterOffer;
-    setCounterOffer: React.Dispatch<React.SetStateAction<CounterOffer>>;
+    counterOffer: CounterOfferType;
+    taskId: string;
+    setCounterOffer: React.Dispatch<React.SetStateAction<CounterOfferType>>;
     setShowSuccessModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setModalMessage: React.Dispatch<React.SetStateAction<{type: string; text: string;}>>;
 }
 
-const CounterContractForm = ({ contract, counterOffer, setCounterOffer, setShowSuccessModal }: CounterContractFormProps) => {
+const CounterContractForm = ({ contract, counterOffer, taskId, setCounterOffer, setShowSuccessModal, setModalMessage }: CounterContractFormProps) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,23 +33,31 @@ const CounterContractForm = ({ contract, counterOffer, setCounterOffer, setShowS
   const handleSubmit = async () => {
       setIsSubmitting(true);
       
-      // Simulate API call
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setShowSuccessModal(true);
-      }, 2000);
-  
-    //   const response = await fetchWithAuth(someurl, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //       decision: 'COUNTER',
-    //       counterRate: counterOffer.counterRate,
-    //       counterTerms: counterOffer.counterTerms,
-    //       justification: counterOffer.justification,
-    //       additionalTerms: counterOffer.additionalTerms
-    //     })
-    //   });
+        try {
+            const response = await fetchWithAuth(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/contracts/contracts/tasks/${taskId}/counter-offer/`, 
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        counter_rate: counterOffer.counterRate,
+                        counter_explanation: counterOffer.counterExplanation,
+                        counter_terms: counterOffer.counterTerms,
+                    })
+                }
+            );
+            
+            if (response.ok) {
+                setModalMessage({type: 'success', text: 'Counter Offer Submitted!'})
+            } else {
+                setModalMessage({type: 'error', text: 'Failed to submit counter offer'})
+            }
+        } catch (error) {
+            setModalMessage({type: 'error', text: 'Network error. Please check your connection and try again.'})
+        } finally {
+            setIsSubmitting(false);
+            setShowSuccessModal(true);
+        }
   };
 
   //   const calculatePotentialSavings = () => {
@@ -112,7 +122,7 @@ const CounterContractForm = ({ contract, counterOffer, setCounterOffer, setShowS
                                 className="bg-red-500 h-8 rounded-full flex items-center justify-end pr-3"
                                 style={{ width: '100%' }}
                             >
-                                <span className="text-white font-bold text-sm">€{contract.offered_daily_rate}</span>
+                                <span className="text-white font-bold text-sm">€{contract.proposed_rate}</span>
                             </div>
                         </div>
                     </div>
@@ -122,22 +132,22 @@ const CounterContractForm = ({ contract, counterOffer, setCounterOffer, setShowS
                         <div className="flex-1 bg-gray-200 rounded-full h-8 relative">
                             <div
                                 className="bg-green-500 h-8 rounded-full flex items-center justify-end pr-3"
-                                style={{ width: `${(counterOffer.counterRate / contract.offered_daily_rate) * 100}%` }}
+                                style={{ width: `${(counterOffer.counterRate / contract.proposed_rate) * 100}%` }}
                             >
                                 <span className="text-white font-bold text-sm">€{counterOffer.counterRate}</span>
                             </div>
                         </div>
                     </div>
 
-                    {contract?.expected_rate && (
+                    {contract?.providers_expected_rate && (
                     <div className="flex items-center">
                         <div className="w-32 text-sm text-gray-600">Target:</div>
                         <div className="flex-1 bg-gray-200 rounded-full h-8 relative">
                             <div
                                 className="bg-blue-500 h-8 rounded-full flex items-center justify-end pr-3"
-                                style={{ width: `${(contract.expected_rate / contract.offered_daily_rate) * 100}%` }}
+                                style={{ width: `${(contract.providers_expected_rate / contract.proposed_rate) * 100}%` }}
                             >
-                                <span className="text-white font-bold text-sm">€{contract.expected_rate}</span>
+                                <span className="text-white font-bold text-sm">€{contract.providers_expected_rate}</span>
                             </div>
                         </div>
                     </div>
@@ -158,14 +168,14 @@ const CounterContractForm = ({ contract, counterOffer, setCounterOffer, setShowS
                 Explain Your Counter Offer *
                 </label>
                 <textarea
-                value={counterOffer.justification}
-                onChange={(e) => setCounterOffer({ ...counterOffer, justification: e.target.value })}
+                value={counterOffer.counterExplanation}
+                onChange={(e) => setCounterOffer({ ...counterOffer, counterExplanation: e.target.value })}
                 rows={5}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Provide detailed reasoning for your counter rate. Include market comparisons, budget constraints, or other relevant factors..."
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                {counterOffer.justification.length} characters
+                {counterOffer.counterExplanation.length} characters
                 </p>
             </div>
         </div>

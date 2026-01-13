@@ -1,5 +1,5 @@
-import { ContractType } from "@/types/dashboard";
-import { Clock, Eye } from "lucide-react";
+import { ContractType } from "@/types/contract-type";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 
 interface ActiveContractCardProps {
@@ -34,7 +34,7 @@ const ActiveContractCard: React.FC<ActiveContractCardProps> = ({ contract, type 
             </div>
             <div>
               <p className="text-gray-500">Duration</p>
-              <p className="font-medium text-gray-900">{contract.valid_from} - {contract.valid_to}</p>
+              <p className="font-medium text-gray-900">{contract.valid_from} - {contract.valid_till}</p>
             </div>
             <div>
               <p className="text-gray-500">Negotiated Rate</p>

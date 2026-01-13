@@ -7,23 +7,22 @@ import { useParams } from 'next/navigation';
 import { fetchWithAuth } from '@/lib/auth';
 import ContractDetails from '@/components/contracts/contract-details';
 import { ContractType } from '@/types/contract-type';
-import CounterContractForm, { CounterOffer } from '@/components/contracts/counter-contract-form';
+import CounterContractForm, { CounterOfferType } from '@/components/contracts/counter-contract-form';
 import CounterOfferResponseModal from '@/components/contracts/counter-offer-response-modal';
-
-
 
 
 const CounterContractPage: React.FC = () => {
   const params = useParams()
   const contractId = params.id as string;
+  const taskId = params.taskId as string;
   const [contract, setContract] = useState<ContractType | null>(null);
-  const [counterOffer, setCounterOffer] = useState<CounterOffer>({
+  const [counterOffer, setCounterOffer] = useState<CounterOfferType>({
     counterRate: 0.00,
     counterTerms: '',
-    justification: '',
-    additionalTerms: '',
+    counterExplanation: '',
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState<{type: string; text: string}>({type: '', text: ''});
 
   useEffect(() => {
     fetchContractDetails()
@@ -36,10 +35,10 @@ const CounterContractPage: React.FC = () => {
         if (response.ok) {
             const data = await response.json()
             setContract(data)
-            if (data?.expected_rate) {
+            if (data?.providers_expected_rate) {
                 setCounterOffer(prev => ({
                     ...prev,
-                    counterRate: data.expected_rate,
+                    counterRate: data.providers_expected_rate,
                 }))
             }
         }
@@ -82,14 +81,16 @@ const CounterContractPage: React.FC = () => {
                 <CounterContractForm 
                     contract={contract}
                     counterOffer={counterOffer} 
+                    taskId={taskId}
                     setCounterOffer={setCounterOffer} 
                     setShowSuccessModal={setShowSuccessModal}
+                    setModalMessage={setModalMessage}
                 />
             </div>
 
             {/* Success Modal */}
             {showSuccessModal && (
-                <CounterOfferResponseModal providerName={contract.specialist_name} />
+                <CounterOfferResponseModal modalMessage={modalMessage} contractId={contractId} />
             )}
         </div>
     </div>

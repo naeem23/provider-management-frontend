@@ -1,26 +1,54 @@
-import { getDaysLeft } from '@/lib/utils';
+import { fetchWithAuth } from '@/lib/auth';
+import { getDaysLeft, getStatusColor, getUserFromStorage } from '@/lib/utils';
 import { ContractType } from '@/types/contract-type';
 import { Briefcase, Calendar, Clock, DollarSign, Eye, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react'
+import React, { useState } from 'react'
 
 interface ContractSummaryCardProps {
   contract: ContractType;
   type?: string;
+  setActiveTab?: (tab: string) => void;
 }
 
-const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, type }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800';
-      case 'IN_NEGOTIATION': return 'bg-orange-100 text-orange-800';
-      case 'PENDING': return 'bg-gray-100 text-gray-800';
-      case 'EXPIRED': return 'bg-red-100 text-red-800';
-      default: return 'bg-red-100 text-red-800';
+const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, type, setActiveTab }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const user = getUserFromStorage();
+
+  const handleStartNegotiation = async () => {
+    setIsLoading(true);
+
+    try {
+      const payload = {
+        id: contract.id,
+        title: contract.title,
+        proposed_rate: contract.proposed_rate,
+        valid_from: contract.valid_from,
+        valid_till: contract.valid_till,
+        response_deadline: contract.response_deadline,
+        domain: contract.domain,
+        terms_condition: contract.terms_and_condition,
+        provider: user?.provider_id,
+      }
+
+      const response = await fetchWithAuth(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/contracts/contracts/start-negotiation/`,
+        {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        }
+      )
+
+      if (response.ok) {
+        setActiveTab && setActiveTab('action-required');
+      }
+    } catch (error) {
+        console.error(`Error fetching contracts:`, error)
+    } finally {
+        setIsLoading(false)
     }
-  };
-
-
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -36,14 +64,19 @@ const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, typ
             {type === "expiring" && (
               <span className="flex items-center text-xs text-gray-500">
                 <Clock className="w-4 h-4 mr-1" />
-                {getDaysLeft(contract.valid_to)} days left
+                {getDaysLeft(contract.valid_till)} days left
               </span>
             )}
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{contract.title}</h2>
           <p className="text-gray-600">Service Request: {contract.service_request_code}</p>
         </div>
-        {type && (
+        {type && type === 'published-only' && contract.status !== 'IN_NEGOTIATION' && (
+            <button onClick={handleStartNegotiation} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium cursor-pointer" disabled={isLoading}>
+              {isLoading ? "Starting Negotiation..." : "Start Negotiation"}
+            </button>
+        )}
+        {type && (type === "active" || type === 'expiring') && (
           <Link href={`/dashboard/contracts/${contract.id}/versions`} className="ml-4 flex items-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium">
             <Eye className="w-4 h-4 mr-2" />
             View Versions
@@ -65,7 +98,7 @@ const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, typ
             <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
             <p className="text-xs text-gray-500 font-medium">Offered Rate</p>
           </div>
-          <p className="text-sm font-semibold text-orange-600">€{contract.offered_daily_rate}/day</p>
+          <p className="text-sm font-semibold text-orange-600">€{contract.proposed_rate}/day</p>
         </div>
 
         <div className="bg-gray-50 rounded-lg p-4">
@@ -83,11 +116,11 @@ const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, typ
             <Calendar className="w-4 h-4 text-gray-500 mr-2" />
             <p className="text-xs text-gray-500 font-medium">Contract Period</p>
           </div>
-          <p className="text-sm font-semibold text-gray-900">{contract.valid_from} - {contract.valid_to}</p>
+          <p className="text-sm font-semibold text-gray-900">{contract.valid_from} - {contract.valid_till}</p>
         </div>
       </div>
 
-      {!type && contract.response_deadline && (
+      {(!type || type === 'published-only') && contract.response_deadline && (
         <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center">
           <Clock className="w-5 h-5 text-yellow-600 mr-3" />
           <div>

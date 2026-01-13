@@ -38,7 +38,7 @@ const VersionDetails: React.FC<VersionDetailsProps> = ({ version, currentVersion
             </div>
             <p className="text-sm text-gray-600">Created on {version.created_at.split('T')[0]}</p>
           </div>
-          {version.id === currentVersionId && (
+          {/* {version.id === currentVersionId && (
             <div className="flex space-x-2">
               <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                 Accept Offer
@@ -50,7 +50,7 @@ const VersionDetails: React.FC<VersionDetailsProps> = ({ version, currentVersion
                 Reject
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 

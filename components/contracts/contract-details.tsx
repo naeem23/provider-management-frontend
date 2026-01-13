@@ -50,21 +50,21 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ contract }) => {
                         <div className="space-y-3">
                             <div>
                                 <p className="text-xs text-gray-500 mb-1">Proposed Rate</p>
-                                <p className="text-2xl font-bold text-red-600">€{contract.offered_daily_rate}</p>
+                                <p className="text-2xl font-bold text-red-600">€{contract.proposed_rate}</p>
                                 <p className="text-xs text-gray-500">per day</p>
                             </div>
                             <div className="border-t border-orange-200 pt-3">
                                 <p className="text-xs text-gray-500 mb-1">Your Expected Rate</p>
-                                <p className="text-2xl font-bold text-green-600">€{contract.expected_rate || "__"}</p>
+                                <p className="text-2xl font-bold text-green-600">€{contract.providers_expected_rate || "--"}</p>
                                 <p className="text-xs text-gray-500">per day</p>
                             </div>
                             <div className="border-t border-orange-200 pt-3">
                                 <p className="text-xs text-gray-500 mb-1">Difference</p>
                                 <p className="text-lg font-bold text-orange-600">
-                                    €{contract?.expected_rate ? contract.offered_daily_rate - contract.expected_rate : "--"}
+                                    €{contract?.providers_expected_rate ? contract.proposed_rate - contract.providers_expected_rate : "--"}
                                 </p>
-                                {contract?.expected_rate ? (
-                                    <p className="text-xs text-gray-500">{aboveOrBelowTarget(contract.offered_daily_rate, contract.expected_rate)} expected</p>
+                                {contract?.providers_expected_rate ? (
+                                    <p className="text-xs text-gray-500">{aboveOrBelowTarget(contract.proposed_rate, contract.providers_expected_rate)} expected</p>
                                 ) : (
                                     <p className="text-xs text-gray-500">above expected</p>
                                 )}
@@ -77,7 +77,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ contract }) => {
                         <p className="text-xs text-gray-500 mb-1">Contract Duration</p>
                         <div className="flex items-center text-sm text-gray-900">
                             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                            <span>{contract.valid_from} to {contract.valid_to}</span>
+                            <span>{contract.valid_from} to {contract.valid_till}</span>
                         </div>
                     </div>
 

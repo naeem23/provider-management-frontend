@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { fetchWithAuth, logout } from '@/lib/auth'
 import { AlertTriangle, Trash2 } from 'lucide-react'
 import { UserData } from '@/types/user'
+import { getUserFromStorage } from '@/lib/utils'
 
 interface FormData {
   username: string
@@ -46,25 +47,23 @@ export default function AccountSettingsPage() {
   const [successMessage, setSuccessMessage] = useState('')
   const [deleteLoading, setDeleteLoading] = useState(false)
 
+  const existingUser = getUserFromStorage();
+
   useEffect(() => {
     getUserData()
   }, [])
 
   const getUserData = async () => {
     try {
-      // First try to get from localStorage cache
-      const cachedUser = localStorage.getItem('user')
-      
-      if (cachedUser) {
-        const user: UserData = JSON.parse(cachedUser)
-        setUserData(user)
+      if (existingUser) {
+        setUserData(existingUser)
         setFormData({
-          username: user.username,
+          username: existingUser.username,
           password: '',
           confirmPassword: '',
-          firstName: user.first_name || '',
-          lastName: user.last_name || '',
-          role: user.role,
+          firstName: existingUser.first_name || '',
+          lastName: existingUser.last_name || '',
+          role: existingUser.role,
         })
         setFetchingUser(false)
       } else {
@@ -204,9 +203,13 @@ export default function AccountSettingsPage() {
       )
 
       if (response.ok) {
-        const updatedUser = await response.json()
+        const reponseData = await response.json()
+        const updatedUser: UserData = {
+          ...existingUser,
+          ...reponseData
+        }
         // Update localStorage cache
-        localStorage.setItem('user_data', JSON.stringify(updatedUser))
+        localStorage.setItem('user', JSON.stringify(updatedUser))
         
         setSuccessMessage('Account updated successfully!')
 

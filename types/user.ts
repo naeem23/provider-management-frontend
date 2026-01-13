@@ -5,6 +5,9 @@ export interface UserData {
   last_name: string
   role: string
   provider_id: string
+  provider_name: string
+  is_active: boolean
+  date_joined: string
 }
 
 export interface UserAccount {
