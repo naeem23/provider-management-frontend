@@ -147,3 +147,13 @@ export const getDaysLeft = (deadline: string) => {
 
   return diffInDays > 0 ? diffInDays : 0;
 }
+
+export const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'ACTIVE': return 'bg-green-100 text-green-800';
+    case 'IN_NEGOTIATION': return 'bg-orange-100 text-orange-800';
+    case 'PENDING': return 'bg-gray-100 text-gray-800';
+    case 'EXPIRED': return 'bg-red-100 text-red-800';
+    default: return 'bg-red-100 text-red-800';
+  }
+};
