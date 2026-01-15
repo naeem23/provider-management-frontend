@@ -1,13 +1,11 @@
 import React from 'react';
-import { Calendar, FileText, Users } from 'lucide-react';
-import { ActiveOrder, FlowableTask, SubmittedOffer, TabType } from '@/types/dashboard';
+import { FileText, } from 'lucide-react';
+import { ActiveOrder, SubmittedOffer, TabType } from '@/types/dashboard';
 import TaskCard from './task-card';
-import OfferCard from './offer-card';
-import OrderCard from './order-card';
 import EmptyState from '../empty-state';
 import OffersTab from './offers-tab';
-import { specialists } from '@/lib/dummy-data';
 import SpecialistsTab from './specialists-tab';
+import { FlowableTask } from '@/types/service-type';
 
 interface TabContentProps {
   activeTab: TabType;
@@ -30,9 +28,9 @@ const TabContent: React.FC<TabContentProps> = ({
             <h3 className="text-xl font-bold text-gray-900">Open Bidding Tasks</h3>
             <span className="text-sm text-gray-500">From Flowable Process Engine</span>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 grid grid-cols-1 lg:grid-cols-2">
             {flowableTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard key={task.task_id} task={task} />
             ))}
           </div>
         </div>

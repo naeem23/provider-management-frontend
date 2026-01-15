@@ -28,3 +28,31 @@ export interface Specialist {
   averageDailyRate: number;
   activeAssignments: number;
 }
+
+export interface SpecialistDetails {
+  id: string;
+  provider: string;
+  provider_name: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  specialist_code: string;
+  role_name: string;
+  experience_level: 'LEAD' | 'EXPERT' | 'SENIOR' | 'MID' | 'JUNIOR';
+  skills: string;
+  certifications: string;
+  specialization: string;
+  avg_daily_rate: string;
+  status: string;
+  available_from: string;
+  available_until: string | null;
+  max_weekly_hours: number;
+  location: string;
+  work_mode: string;
+  willing_to_travel: boolean;
+  languages_spoken: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
