@@ -123,3 +123,13 @@ export type SpecialistType = {
     created_at?: string;
     updated_at?: string;
 }
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  is_read: boolean;
+  entity_type: string;
+  entity_id: string;
+  created_at: string;
+}

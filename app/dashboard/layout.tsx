@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Bell, User, LogOut } from 'lucide-react'
 import { fetchWithAuth, logout } from '@/lib/auth'
 import { UserData } from '@/types/user'
+import Link from 'next/link'
 
 
 export default function DashboardLayout({
@@ -91,7 +92,9 @@ export default function DashboardLayout({
 
             {/* Notifications */}
             <div className="relative cursor-pointer">
-              <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+              <Link href="/dashboard/notifications">
+                <Bell className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+              </Link>
               {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {notificationCount}
