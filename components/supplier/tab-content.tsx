@@ -29,10 +29,17 @@ const TabContent: React.FC<TabContentProps> = ({
             <span className="text-sm text-gray-500">From Flowable Process Engine</span>
           </div>
           <div className="space-y-4 grid grid-cols-1 lg:grid-cols-2">
-            {flowableTasks.map((task) => (
+            {flowableTasks.length > 0 && flowableTasks.map((task) => (
               <TaskCard key={task.task_id} task={task} />
             ))}
           </div>
+          
+          {flowableTasks.length === 0 && (
+            <EmptyState 
+              icon={FileText} 
+              message="No flowable tasks found." 
+            />
+          )}
         </div>
       )}
 

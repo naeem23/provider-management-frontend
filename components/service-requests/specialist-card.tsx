@@ -97,7 +97,7 @@ export const SpecialistCard: React.FC<Props> = ({ specialist, onSelect }) => {
 
       <button
         onClick={() => onSelect(specialist)}
-        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+        className="cursor-pointer w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
       >
         Select Specialist
       </button>

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, FileText, Euro, AlertCircle, CheckCircle, MessageSquare, Edit } from 'lucide-react';
+import { ArrowLeft, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { fetchWithAuth } from '@/lib/auth';

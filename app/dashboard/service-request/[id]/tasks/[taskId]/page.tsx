@@ -1,127 +1,30 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, User, Briefcase, Search, CheckCircle, AlertCircle, MessageSquare } from 'lucide-react';
-import { ServiceOffer, ServiceOfferCreateType, ServiceRequest } from '@/types/service-type';
+import React, { useState, useEffect, useEffectEvent } from 'react';
+import { ArrowLeft, User, Search, CheckCircle, AlertCircle, MessageSquare, FileText } from 'lucide-react';
+import { ServiceOfferCreateType, ServiceRequest } from '@/types/service-type';
 import { SpecialistDetails } from '@/types/user';
 import { ServiceRequestSidebar } from '@/components/service-requests/service-request-sidebar';
 import { SelectedSpecialistDisplay } from '@/components/service-requests/selected-specialist-display';
 import { PricingSection } from '@/components/service-requests/pricing-section';
 import { SpecialistSelectionModal } from '@/components/service-requests/specialist-selection-modal';
+import { useParams } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/auth';
+import SubmitOfferResponseModal from '@/components/service-requests/submit-offer-response-modal';
 
 
 const SubmitOfferPage: React.FC = () => {
-  const serviceRequest: ServiceRequest = {
-    id: 'SR-2024-001',
-    title: 'Senior Java Developer for Banking Platform',
-    status: 'OPEN',
-    start_date: '2024-02-15',
-    end_date: '2024-08-15',
-    role_name: 'Senior Developer',
-    technology: 'Java/Spring Boot',
-    specialization: 'Backend',
-    experience_level: 'SENIOR',
-    expected_man_days: 120,
-    work_mode: 'Remote',
-    task_description: 'Develop and maintain microservices architecture for core banking platform. Responsibilities include API design, implementation, testing, and documentation.',
-    criteria_json: {
-      languages: [
-        { name: 'English', level: 'C1' },
-        { name: 'German', level: 'B2' }
-      ],
-      skills: [
-        'Java Spring Boot',
-        'Python Django',
-        'REST APIs design and development'
-      ],
-      certifications: [
-        'Kubernetes/Docker experience',
-        'Banking domain knowledge',
-        'Kafka/messaging systems',
-      ]
-    }, 
-    offer_deadline: '2024-01-15'
-  };
+  const params = useParams()
+  const requestId = params.id as string;
+  const taskId = params.taskId as string;
 
-  const allSpecialists: SpecialistDetails[] = [
-    {
-      id: 'e0d2262e-4113-4d9b-9235-bfc0525173a4',
-      provider: '07319e7e-b2f4-4ed9-ace1-6540c1e45d59',
-      provider_name: 'Senders',
-      first_name: "John",
-      last_name: 'Smith',
-      email: 'john.smith@example.com',
-      phone: '+1-555-0123',
-      specialist_code: 'SP-0001',
-      role_name: 'Software Developer',
-      experience_level: 'SENIOR',
-      skills: 'Java, Sprint Boot, Python, Django',
-      certifications: 'Docker, Kafka, Flowable',
-      specialization: 'Backend',
-      avg_daily_rate: "850",
-      status: "Active",
-      available_from: "2026-01-01",
-      available_until: null,
-      max_weekly_hours: 40,
-      location: 'Frankfurt, Germany',
-      work_mode: 'Remote',
-      willing_to_travel: true,
-      languages_spoken: 'English, German'
-    },
-    {
-      id: 'f0d2262e-4113-4d9b-9235-bfc0525173a4',
-      provider: '07319e7e-b2f4-4ed9-ace1-6540c1e45d59',
-      provider_name: 'Senders',
-      first_name: "Doe",
-      last_name: 'Smith',
-      email: 'doe.smith@example.com',
-      phone: '+1-555-0123',
-      specialist_code: 'SP-0001',
-      role_name: 'Software Developer',
-      experience_level: 'JUNIOR',
-      skills: 'Python, Django, JavaScript',
-      certifications: 'Docker, Flowable',
-      specialization: 'Full Stack',
-      avg_daily_rate: "450",
-      status: "On Leave",
-      available_from: "2026-03-01",
-      available_until: null,
-      max_weekly_hours: 40,
-      location: 'Frankfurt, Germany',
-      work_mode: 'Remote',
-      willing_to_travel: true,
-      languages_spoken: 'English'
-    },
-    {
-      id: 'a3d2262e-4113-4d9b-9235-bfc0525173a4',
-      provider: '07319e7e-b2f4-4ed9-ace1-6540c1e45d59',
-      provider_name: 'Senders',
-      first_name: "Siddique",
-      last_name: 'Naeem',
-      email: 'doe.smith@example.com',
-      phone: '+1-555-0123',
-      specialist_code: 'SP-0001',
-      role_name: 'Software Developer',
-      experience_level: 'MID',
-      skills: 'Python, Django, JavaScript, TypeScript, C#',
-      certifications: 'Docker, Flowable, AWS',
-      specialization: 'Full Stack',
-      avg_daily_rate: "650",
-      status: "Inactive",
-      available_from: "2026-06-01",
-      available_until: null,
-      max_weekly_hours: 40,
-      location: 'Frankfurt, Germany',
-      work_mode: 'Remote',
-      willing_to_travel: true,
-      languages_spoken: 'English'
-    }
-  ];
-
+  const [serviceRequest, setServiceRequest] = useState<ServiceRequest | null>(null)
   const [selectedSpecialist, setSelectedSpecialist] = useState<SpecialistDetails | null>(null);
   const [showSpecialistModal, setShowSpecialistModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState<{type: string; text: string}>({type: '', text: ''});
+  const [offerId, setOfferId] = useState<string>('');
 
   const [offer, setOffer] = useState<ServiceOfferCreateType>({
     service_request: '',
@@ -132,16 +35,34 @@ const SubmitOfferPage: React.FC = () => {
     total_cost: 0,
     notes: '',
   });
+  
+
+  useEffect(() => {
+    fetchServiceRequestDetails()
+  }, [requestId])  
 
   // Calculate total cost when rates change
   useEffect(() => {
-    if (offer.daily_rate > 0) {
+    if (offer.daily_rate > 0 && serviceRequest?.expected_man_days) {
       const baseCost = offer.daily_rate * serviceRequest.expected_man_days;
       const travelCost = offer.travel_cost;
       const total = baseCost + travelCost;
       setOffer(prev => ({ ...prev, total_cost: total }));
     }
-  }, [offer.daily_rate, offer.travel_cost, serviceRequest.expected_man_days]);
+  }, [offer.daily_rate, offer.travel_cost, serviceRequest?.expected_man_days]);
+
+  const fetchServiceRequestDetails = async () => {
+    try {
+        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/service-requests/${requestId}`)
+
+        if (response.ok) {
+            const data = await response.json()
+            setServiceRequest(data)
+        }
+    } catch (error) {
+        console.error('Failed to fetch service request:', error)
+    }
+  }
 
   const handleSpecialistSelect = (specialist: SpecialistDetails) => {
     setSelectedSpecialist(specialist);
@@ -164,34 +85,38 @@ const SubmitOfferPage: React.FC = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetchWithAuth(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/service-requests/tasks/${taskId}/submit-offer/`, 
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            request: serviceRequest?.id,
+            provider: selectedSpecialist?.provider,
+            proposed_specialist: selectedSpecialist?.id,
+            daily_rate: offer.daily_rate,
+            travel_cost: offer.travel_cost,
+            total_cost: offer.total_cost,
+            notes: offer.notes
+          })
+        }
+      );
+            
+      if (response.ok) {
+        const data = await response.json()
+        if (data?.offer_id) setOfferId(data.offer_id)
+        setModalMessage({type: 'success', text: 'Counter Offer Submitted!'})
+      } else {
+        setModalMessage({type: 'error', text: 'Failed to submit counter offer'})
+      }
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+      setModalMessage({type: 'error', text: 'Network error. Please check your connection and try again.'})
+    } finally {
       setIsSubmitting(false);
       setShowSuccessModal(true);
-    }, 2000);
-
-    // Real implementation:
-    // const response = await fetch(`/api/flowable/tasks/${taskId}/complete`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     serviceRequestId: serviceRequest.id,
-    //     specialistId: offer.specialistId,
-    //     specialistName: offer.specialistName,
-    //     materialNumber: offer.materialNumber,
-    //     dailyRate: offer.dailyRate,
-    //     travellingCost: offer.travellingCost,
-    //     totalCost: offer.totalCost,
-    //     contractualRelationship: offer.contractualRelationship,
-    //     subcontractorName: offer.subcontractorName,
-    //     notes: offer.notes
-    //   })
-    // });
-    // 
-    // if (response.ok) {
-    //   router.push('/dashboard');
-    // }
+    }
   };
 
   const goBack = () => {
@@ -205,6 +130,15 @@ const SubmitOfferPage: React.FC = () => {
       offer.daily_rate > 0
     );
   };
+
+  if (!serviceRequest) {
+    return (
+        <div className="text-center py-12">
+            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">Sorry, we couldn't found any service request with this id!</p>
+        </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -256,7 +190,7 @@ const SubmitOfferPage: React.FC = () => {
                   </p>
                   <button
                     onClick={() => setShowSpecialistModal(true)}
-                    className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
+                    className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center cursor-pointer"
                   >
                     <Search className="w-5 h-5 mr-2" />
                     Browse Available Specialists
@@ -316,14 +250,14 @@ const SubmitOfferPage: React.FC = () => {
                   <div className="flex gap-4">
                     <button
                       onClick={goBack}
-                      className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                      className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleSubmit}
                       disabled={!isFormValid() || isSubmitting}
-                      className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                      className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer ${
                         !isFormValid() || isSubmitting
                           ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                           : 'bg-blue-600 text-white hover:bg-blue-700'
@@ -363,7 +297,6 @@ const SubmitOfferPage: React.FC = () => {
       {/* Specialist Selection Modal */}
       {showSpecialistModal && (
         <SpecialistSelectionModal
-          specialists={allSpecialists}
           onSelect={handleSpecialistSelect}
           onClose={() => setShowSpecialistModal(false)}
         />
@@ -371,36 +304,13 @@ const SubmitOfferPage: React.FC = () => {
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Offer Submitted Successfully!</h3>
-              <p className="text-gray-600 mb-2">
-                Your offer for <span className="font-semibold">{selectedSpecialist?.first_name} {selectedSpecialist?.last_name}</span> has been submitted.
-              </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 text-left">
-                <p className="text-sm text-blue-900">
-                  <span className="font-semibold">Offer ID:</span> Will be generated<br />
-                  <span className="font-semibold">Service Request:</span> {serviceRequest.id}<br />
-                  <span className="font-semibold">Total Cost:</span> €{offer.total_cost.toLocaleString()}<br />
-                  <span className="font-semibold">Status:</span> Sent to System 1 for evaluation
-                </p>
-              </div>
-              <p className="text-sm text-gray-500 mb-6">
-                You'll receive a notification when the client reviews your offer.
-              </p>
-              <button
-                onClick={goBack}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Return to Dashboard
-              </button>
-            </div>
-          </div>
-        </div>
+        <SubmitOfferResponseModal 
+          modalMessage={modalMessage}
+          specialistName={`${selectedSpecialist?.first_name} ${selectedSpecialist?.last_name}`}
+          offerId={offerId}
+          requestId={serviceRequest?.id}
+          totalCost={offer.total_cost}
+        />
       )}
     </div>
   );

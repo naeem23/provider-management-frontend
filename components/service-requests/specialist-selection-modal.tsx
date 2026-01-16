@@ -1,24 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Search } from 'lucide-react';
 import { SpecialistDetails } from '@/types/user';
 import { SpecialistCard } from './specialist-card';
+import { fetchWithAuth } from '@/lib/auth';
 
 interface Props {
-  specialists: SpecialistDetails[];
   onSelect: (specialist: SpecialistDetails) => void;
   onClose: () => void;
 }
 
-export const SpecialistSelectionModal: React.FC<Props> = ({ specialists, onSelect, onClose }) => {
+export const SpecialistSelectionModal: React.FC<Props> = ({ onSelect, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [specialists, setSpecialists] = useState<SpecialistDetails[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const filteredSpecialists = specialists.filter(s =>
-    s.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.role_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.experience_level.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setSpecialists([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      searchSpeacialist(searchTerm);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const searchSpeacialist = async (query: string) => {
+    setIsSearching(true);
+
+    try {
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/specialists/specialists?q=${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSpecialists(data);
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -44,7 +67,7 @@ export const SpecialistSelectionModal: React.FC<Props> = ({ specialists, onSelec
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredSpecialists.map(specialist => (
+            {searchTerm && specialists.length > 0 && specialists.map(specialist => (
               <SpecialistCard
                 key={specialist.id}
                 specialist={specialist}
@@ -55,9 +78,9 @@ export const SpecialistSelectionModal: React.FC<Props> = ({ specialists, onSelec
               />
             ))}
           </div>
-          {filteredSpecialists.length === 0 && (
+          {searchTerm && specialists.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500">No specialists found matching your search.</p>
+              <p className="text-gray-500">{isSearching ? "Searching specialists..." : "No specialists found matching your search."}</p>
             </div>
           )}
         </div>

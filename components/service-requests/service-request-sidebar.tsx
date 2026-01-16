@@ -7,6 +7,10 @@ interface Props {
 }
 
 export const ServiceRequestSidebar: React.FC<Props> = ({ serviceRequest }) => {
+  const skills = serviceRequest.criteria_json?.skills || []
+  const certifications = serviceRequest.criteria_json?.certifications || []
+  const languages = serviceRequest.criteria_json?.languages || []
+  
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-6">
       <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
@@ -57,23 +61,19 @@ export const ServiceRequestSidebar: React.FC<Props> = ({ serviceRequest }) => {
             <Clock className="w-4 h-4 mr-2 text-gray-400" />
             <span>{serviceRequest.start_date} to {serviceRequest.end_date}</span>
           </div>
-          <div className="flex items-center text-sm text-gray-900">
-            <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-            <span>{serviceRequest.work_mode}</span>
-          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-gray-50 rounded py-3">
             <p className="text-xs text-gray-500 mb-1">Total Man Days</p>
-            <p className="text-xl font-bold text-gray-900">{serviceRequest.expected_man_days}</p>
+            <p className="text-xl font-bold text-gray-900">{serviceRequest.expected_man_days} <small className='font-normal text-sm'>days</small></p>
           </div>
         </div>
 
         <div>
           <p className="text-xs text-gray-500 mb-2 font-medium">Must Have Skills</p>
           <div className="space-y-1">
-            {serviceRequest.criteria_json?.skills?.map((skill: string, idx: any) => (
+            {skills?.map((skill: string, idx: any) => (
               <div key={idx} className="flex items-start text-xs">
                 <CheckCircle className="w-3 h-3 mr-2 text-green-600 mt-0.5 shrink-0" />
                 <span className="text-gray-700">{skill}</span>
@@ -85,7 +85,7 @@ export const ServiceRequestSidebar: React.FC<Props> = ({ serviceRequest }) => {
         <div>
           <p className="text-xs text-gray-500 mb-2 font-medium">Certifications</p>
           <div className="space-y-1">
-            {serviceRequest.criteria_json?.certifications?.map((item: string, idx: any) => (
+            {certifications?.map((item: string, idx: any) => (
               <div key={idx} className="flex items-start justify-between text-xs">
                 <span className="text-gray-700">{item}</span>
               </div>
@@ -96,14 +96,16 @@ export const ServiceRequestSidebar: React.FC<Props> = ({ serviceRequest }) => {
         <div>
           <p className="text-xs text-gray-500 mb-2 font-medium">Language Requirements</p>
           <div className="space-y-1">
-            {serviceRequest.criteria_json?.languages?.map((lang: {name: string; level: string;}, idx: any) => (
+            {languages.length > 0 ? languages?.map((lang: string, idx: any) => (
               <div key={idx} className="flex items-center justify-between text-xs">
-                <span className="text-gray-700">{lang.name}</span>
-                <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs">
+                <span className="text-gray-700">{lang}</span>
+                {/* <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs">
                   {lang.level}
-                </span>
+                </span> */}
               </div>
-            ))}
+            )) : (
+              <span className="text-gray-700">No language specification</span>
+            )}
           </div>
         </div>
 

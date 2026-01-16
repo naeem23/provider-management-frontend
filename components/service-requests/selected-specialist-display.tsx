@@ -87,7 +87,7 @@ export const SelectedSpecialistDisplay: React.FC<Props> = ({ specialist, onRemov
 
       <button
         onClick={onChangeClick}
-        className="mt-4 w-full bg-white border border-blue-300 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium text-sm"
+        className="cursor-pointer mt-4 w-full bg-white border border-blue-300 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors font-medium text-sm"
       >
         Change Specialist
       </button>
