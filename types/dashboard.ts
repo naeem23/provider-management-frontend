@@ -133,3 +133,16 @@ export interface Notification {
   entity_id: string;
   created_at: string;
 }
+
+export interface AuditLog {
+  id: number;
+  user: string;
+  user_role: string;
+  action_category: string;
+  action_type: string;
+  description: string;
+  result: 'SUCCESS' | 'FAILURE' | 'PENDING' | 'ERROR';
+  entity_type: string;
+  entity_id: string;
+  created_at: string;
+}

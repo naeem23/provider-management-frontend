@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Users, UserPlus, Settings } from 'lucide-react'
+import { Users, UserPlus, Settings, Shield } from 'lucide-react'
 import { fetchWithAuth, logout } from '@/lib/auth'
 import { UserData } from '@/types/user'
 import MetricCard from '@/components/metric-card'
@@ -160,6 +160,12 @@ export default function DashboardPage() {
                 title="Manage Users"
                 description="View and manage all user accounts"
                 onClick={() => router.push('/dashboard/users')}
+              />
+              <ActionCard
+                icon={<Shield className="w-6 h-6" />}
+                title="Audit Logs"
+                description="View audit logs"
+                onClick={() => router.push('/dashboard/audit-logs')}
               />
             </div>
           </div>
