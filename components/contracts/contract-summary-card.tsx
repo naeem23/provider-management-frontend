@@ -33,7 +33,7 @@ const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, typ
       }
 
       const response = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/contracts/contracts/start-negotiation/`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/contracts/contracts/${contract.id}/start-negotiation/`,
         {
           method: 'POST',
           body: JSON.stringify(payload),

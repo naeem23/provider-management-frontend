@@ -104,11 +104,6 @@ const ContractCoordinatorDashboard: React.FC = () => {
                             {tasks.length}
                         </span>
                         )}
-                        {tab === 'new-contracts' && (
-                        <span className="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                            {contracts.length}
-                        </span>
-                        )}
                     </button>
                     ))}
                 </nav>
