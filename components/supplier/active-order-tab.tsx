@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   User, 
   MapPin, 
@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { getDaysLeft } from '@/lib/utils';
 import { ExtensionModal } from './extension-modal';
 import { SubstitutionModal } from './substitution-modal';
+import { fetchWithAuth } from '@/lib/auth';
 
 
 const ActiveOrdersTab: React.FC = () => {
@@ -25,76 +26,24 @@ const ActiveOrdersTab: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
   const [showExtensionModal, setShowExtensionModal] = useState(false);
   const [showSubstitutionModal, setShowSubstitutionModal] = useState(false);
+  const [activeOrders, setActiveOrders] = useState<ServiceOrder[]>([]);
 
-  // Mock data - In real app, fetch from API
-  const activeOrders: ServiceOrder[] = [
-    {
-      id: 'SO-2024-012',
-      title: 'Senior Java Developer for Banking Platform',
-      current_specialist_id: 'Michael Chen',
-      current_specialist_name: 'Michael Chen',
-      original_specialist_id: 'Michael Chen',
-      original_specialist_name: 'Michael Chen',
-      supplier_name: 'Global Finance Corp',
-      role: 'Solution Architect',
-      start_date: '2026-01-15',
-      current_end_date: '2026-03-15',
-      original_end_date: '2026-02-28',
-      current_man_days: 120,
-      consumed_man_days: 85,
-      remaining_man_days: 15,
-      daily_rate: 850,
-      current_contract_value: 102000,
-      original_contract_value: 100000,
-      has_been_extended: true,
-      has_been_substituted: false,
-      status: 'ACTIVE'
-    },
-    {
-      id: 'SO-2024-018',
-      title: 'Frontend Developer - React/TypeScript',
-      current_specialist_id: 'Michael Chen',
-      current_specialist_name: 'Michael Chen',
-      original_specialist_id: 'Michael Chen',
-      original_specialist_name: 'Michael Chen',
-      supplier_name: 'TechStart GmbH',
-      role: 'Frontend Developer',
-      start_date: '2023-11-01',
-      current_end_date: '2024-02-28',
-      original_end_date: '2024-02-28',
-      current_man_days: 80,
-      consumed_man_days: 65,
-      remaining_man_days: 15,
-      daily_rate: 750,
-      current_contract_value: 60000,
-      original_contract_value: 60000,
-      has_been_extended: false,
-      has_been_substituted: false,
-      status: 'ACTIVE'
-    },
-    {
-      id: 'SO-2024-025',
-      title: 'DevOps Engineer - Cloud Infrastructure',
-      current_specialist_id: 'Michael Chen',
-      current_specialist_name: 'Michael Chen',
-      original_specialist_id: 'Michael Chen',
-      original_specialist_name: 'Michael Chen',
-      supplier_name: 'CloudTech Solutions',
-      role: 'DevOps Engineer',
-      start_date: '2023-12-01',
-      current_end_date: '2024-05-31',
-      original_end_date: '2024-04-30',
-      current_man_days: 140,
-      consumed_man_days: 55,
-      remaining_man_days: 85,
-      daily_rate: 820,
-      current_contract_value: 114800,
-      original_contract_value: 102000,
-      has_been_extended: true,
-      has_been_substituted: true,
-      status: 'ACTIVE'
+  useEffect(() => {
+    fetchActieOrders()
+  }, [])
+  
+  const fetchActieOrders = async () => {
+    try {
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/service-orders`)
+
+      if (response.ok) {
+        const data = await response.json()
+        setActiveOrders(data)
+      }
+    } catch (error) {
+      console.error('Error fetching active orders:', error)
     }
-  ];
+  }
 
   const handleRequestExtension = (order: ServiceOrder) => {
     setSelectedOrder(order);

@@ -2,6 +2,7 @@ import { fetchWithAuth } from '@/lib/auth';
 import { ActiveOrder, OfferStatus } from '@/types/dashboard';
 import { useEffect, useState } from 'react';
 import OfferCard from './offer-card';
+import { FileText } from 'lucide-react';
 
 export interface MyOfferType {
   id: string;
@@ -46,9 +47,15 @@ const OffersTab = () => {
     <div>
         <h3 className="text-xl font-bold text-gray-900 mb-6">My Submitted Offers</h3>
         <div className="space-y-4">
-        {offers && offers.map((offer) => (
-          <OfferCard key={offer.id} offer={offer} />
-        ))}
+          {offers.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No offers found</p>
+            </div>
+          ) :
+          offers.map((offer) => (
+            <OfferCard key={offer.id} offer={offer} />
+          ))}
         </div>
     </div>
   );
