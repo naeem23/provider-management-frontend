@@ -88,4 +88,20 @@ export interface ServiceOrder {
   has_been_extended: boolean;
   has_been_substituted: boolean;
   status: string;
+  pending_extension_id?: string | null;
+}
+
+export interface ExtensionType {
+  id: string;
+  service_order_title: string;
+  service_order_current_end_date: string;
+  status: string;
+  additional_man_days: number;
+  new_end_date: string;
+  additional_cost: string;
+  reason: string;
+  rejection_reason: string;
+  created_at: string;
+  updated_at: string;
+  service_order: string;
 }

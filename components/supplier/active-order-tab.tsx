@@ -16,9 +16,10 @@ import {
 import { ServiceOrder } from '@/types/service-type';
 import { useRouter } from 'next/navigation';
 import { getDaysLeft } from '@/lib/utils';
-import { ExtensionModal } from './extension-modal';
+import { ExtensionModal } from './extension-request-modal';
 import { SubstitutionModal } from './substitution-modal';
 import { fetchWithAuth } from '@/lib/auth';
+import { ExtensionResponseModal } from './extension-response-modal';
 
 
 const ActiveOrdersTab: React.FC = () => {
@@ -242,13 +243,15 @@ const ActiveOrdersTab: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-3">
-                <button
-                  onClick={() => handleRequestExtension(order)}
-                  className="flex-1 flex items-center justify-center bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                >
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Request Extension
-                </button>
+                {order?.pending_extension_id && (
+                    <button
+                    onClick={() => handleRequestExtension(order)}
+                    className="flex-1 flex items-center justify-center bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                        Approve/Reject Extension
+                    </button>
+                )}
                 <button
                   onClick={() => handleRequestSubstitution(order)}
                   className="flex-1 flex items-center justify-center bg-purple-600 text-white px-4 py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium"
@@ -263,11 +266,11 @@ const ActiveOrdersTab: React.FC = () => {
       )}
 
       {/* Extension Modal Preview */}
-      {showExtensionModal && selectedOrder && (
-        <ExtensionModal
+      {showExtensionModal && selectedOrder?.pending_extension_id && (
+        <ExtensionResponseModal
+            extensionId={selectedOrder.pending_extension_id}
             isOpen={showExtensionModal} 
             onClose={setShowExtensionModal}
-            serviceOrder={selectedOrder}
         />
       )}
 
