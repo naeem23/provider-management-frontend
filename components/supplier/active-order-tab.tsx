@@ -16,8 +16,8 @@ import {
 import { ServiceOrder } from '@/types/service-type';
 import { useRouter } from 'next/navigation';
 import { getDaysLeft } from '@/lib/utils';
-import SubstitutionModal from './substitution-modal';
 import { ExtensionModal } from './extension-modal';
+import { SubstitutionModal } from './substitution-modal';
 
 
 const ActiveOrdersTab: React.FC = () => {
@@ -329,7 +329,11 @@ const ActiveOrdersTab: React.FC = () => {
 
       {/* Substitution Modal Preview */}
       {showSubstitutionModal && selectedOrder && (
-        <SubstitutionModal />
+        <SubstitutionModal
+            isOpen={showSubstitutionModal} 
+            onClose={setShowSubstitutionModal}
+            serviceOrder={selectedOrder}
+         />
       )}
     </div>
   );
