@@ -1,17 +1,26 @@
-import React, { SetStateAction, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import { X, RefreshCw, DollarSign, User, AlertCircle, Search } from 'lucide-react';
 import { ServiceOrder } from '@/types/service-type';
+import { SpecialistDetails } from '@/types/user';
+import { fetchWithAuth } from '@/lib/auth';
 
 
+const getExperienceColor = (grade: string) => {
+  switch (grade) {
+    case 'LEAD': return 'bg-green-100 text-green-800';
+    case 'EXPERT': return 'bg-blue-100 text-blue-800';
+    case 'SENIOR': return 'bg-yellow-100 text-yellow-800';
+    case 'MID': return 'bg-red-100 text-red-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
 interface SubstitutionFormData {
   outgoingSpecialistName: string;
   incomingSpecialistId: string;
   incomingSpecialistName: string;
-  incomingSpecialistDailyRate: number;
+  incomingSpecialistDailyRate: number | string;
   reason: string;
 }
-
-
 interface SubstitutionModalProps {
   isOpen: boolean;
   onClose: React.Dispatch<SetStateAction<boolean>>;
@@ -19,34 +28,6 @@ interface SubstitutionModalProps {
 }
 
 export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, onClose, serviceOrder }) => {
-  // Mock specialists data
-  const availableSpecialists: any[] = [
-    {
-      id: 'SPEC-005',
-      name: 'Sarah Johnson',
-      assignedRoles: [{ role: 'Senior Developer', experienceLevel: 'Senior' }],
-      performanceGrade: 'A',
-      averageDailyRate: 820,
-      availability: 'Available'
-    },
-    {
-      id: 'SPEC-007',
-      name: 'David Miller',
-      assignedRoles: [{ role: 'Solution Architect', experienceLevel: 'Senior' }],
-      performanceGrade: 'A',
-      averageDailyRate: 880,
-      availability: 'Available'
-    },
-    {
-      id: 'SPEC-010',
-      name: 'Lisa Anderson',
-      assignedRoles: [{ role: 'Senior Developer', experienceLevel: 'Intermediate' }],
-      performanceGrade: 'B',
-      averageDailyRate: 750,
-      availability: 'Available'
-    }
-  ];
-
   const [formData, setFormData] = useState<SubstitutionFormData>({
     outgoingSpecialistName: serviceOrder.current_specialist_name,
     incomingSpecialistId: '',
@@ -55,25 +36,64 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
     reason: ''
   });
 
+  const [availableSpecialists, setAvailableSpecialists] = useState<SpecialistDetails[]>([]);
   const [showSpecialistDropdown, setShowSpecialistDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedSpecialist, setSelectedSpecialist] = useState<SpecialistDetails | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const filteredSpecialists = availableSpecialists.filter(s =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.assignedRoles.some((r: any) => r.role.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setAvailableSpecialists([]);
+      return;
+    }
 
-  const handleSpecialistSelect = (specialist: any) => {
+    const timer = setTimeout(() => {
+      searchSpeacialist(searchTerm);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const searchSpeacialist = async (query: string) => {
+    setIsSearching(true);
+
+    try {
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/specialists/specialists?q=${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableSpecialists(data);
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSpecialistSelect = (specialist: SpecialistDetails) => {
+    setSelectedSpecialist(specialist)
     setFormData({
       ...formData,
       incomingSpecialistId: specialist.id,
       incomingSpecialistName: `${specialist.first_name} ${specialist.last_name}`,
       incomingSpecialistDailyRate: specialist.avg_daily_rate
     });
-    setSearchTerm(specialist.first_name);
+    setSearchTerm(`${specialist.first_name} ${specialist.last_name}`);
     setShowSpecialistDropdown(false);
+  };
+
+  const removeSpecialistSelect = () => {
+    setSelectedSpecialist(null)
+    setFormData({
+      ...formData,
+      incomingSpecialistId: '',
+      incomingSpecialistName: '',
+      incomingSpecialistDailyRate: 0
+    });
+    setSearchTerm('');
   };
 
   const validateForm = (): boolean => {
@@ -203,30 +223,19 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
                 {/* Dropdown */}
                 {showSpecialistDropdown && (
                   <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {filteredSpecialists.length === 0 ? (
+                    {availableSpecialists.length === 0 ? (
                       <div className="p-4 text-center text-gray-500 text-sm">
                         No specialists found
                       </div>
                     ) : (
-                      filteredSpecialists.map((specialist) => (
-                        <div
+                      availableSpecialists.map((specialist) => (
+                        <SpecialistSummary 
                           key={specialist.id}
-                          onClick={() => handleSpecialistSelect(specialist)}
-                          className="p-3 hover:bg-purple-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium text-gray-900">{specialist.name}</p>
-                              <p className="text-xs text-gray-600">
-                                {specialist.assignedRoles[0].role} - Grade {specialist.performanceGrade}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-gray-900">€{specialist.averageDailyRate}</p>
-                              <p className="text-xs text-green-600">{specialist.availability}</p>
-                            </div>
-                          </div>
-                        </div>
+                          specialist={specialist}
+                          onSelect={(s) => {
+                            handleSpecialistSelect(s);
+                          }}
+                        />
                       ))
                     )}
                   </div>
@@ -235,14 +244,14 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
               {errors.incomingSpecialist && (
                 <p className="text-sm text-red-600 mt-1">{errors.incomingSpecialist}</p>
               )}
-              {formData.incomingSpecialistName && (
-                <div className="mt-2 p-3 bg-purple-50 rounded border border-purple-200">
-                  <p className="text-sm text-purple-900">
-                    <span className="font-semibold">Selected:</span> {formData.incomingSpecialistName} ({formData.incomingSpecialistId})
-                  </p>
-                </div>
-              )}
             </div>
+
+            {selectedSpecialist && (
+              <SpecialistSummary 
+                specialist={selectedSpecialist}
+                onRemove={removeSpecialistSelect}      
+              />
+            )}
 
             {/* Incoming Specialist Daily Rate */}
             <div>
@@ -332,3 +341,69 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
     </div>
   );
 };
+
+
+interface SelectedSpecialistSummaryProps {
+  specialist: SpecialistDetails;
+  onRemove?: () => void;
+  onSelect?: (specialist: SpecialistDetails) => void;
+}
+const SpecialistSummary = ({ specialist, onRemove, onSelect }: SelectedSpecialistSummaryProps) => {
+  return (
+    <div
+      onClick={() => onSelect && onSelect(specialist)}
+      className={`p-3 hover:bg-purple-50 cursor-pointer last:border-b-0 ${onRemove ? "bg-purple-50 border-purple-200 border rounded-sm" : "border-b border-gray-100"}`}
+    >
+      <div className="flex items-start mb-3">
+        <h4 className="font-bold text-gray-900 mr-2">{specialist.first_name} {specialist.last_name}</h4>
+        <span className={`text-xs px-2 py-1 rounded-full font-medium ${getExperienceColor(specialist.experience_level)}`}>
+          {specialist.experience_level}
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <p className="text-sm text-gray-500 mb-1">Role: {specialist.role_name}</p>
+        <p className="text-sm text-gray-500 mb-1">Specialization: {specialist.specialization}</p>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <p className="text-xs text-gray-500">Avg. Rate</p>
+          <span className="font-bold text-gray-900">€{specialist.avg_daily_rate} / day</span>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500">Available</p>
+          <span className="font-bold text-gray-900">{specialist.available_from} - {specialist.available_until}</span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <p className="text-sm text-gray-500">Skills</p>
+          <p className="text-xs font-bold text-blue-600">{specialist.skills}</p>
+        </div>
+        <div>
+          <p className="text-sm text-gray-500">Certifications</p>
+          <p className="text-xs font-bold text-purple-600">{specialist.certifications}</p>
+        </div>
+      </div>
+      
+      {onSelect && (
+        <button
+          onClick={() => onSelect(specialist)}
+          className="cursor-pointer w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+        >
+          Select Specialist
+        </button>
+      )}
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          className="cursor-pointer w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+        >
+          Remove Specialist
+        </button>
+      )}
+    </div>
+  )
+}

@@ -122,11 +122,6 @@ const ActiveOrdersTab: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-gray-900">Active Service Orders</h3>
-        <div className="flex items-center space-x-3">
-          <span className="text-sm text-gray-600">
-            Total: <span className="font-bold text-gray-900">{activeOrders.length}</span> orders
-          </span>
-        </div>
       </div>
 
       {activeOrders.length === 0 ? (
