@@ -16,6 +16,8 @@ import {
 import { ServiceOrder } from '@/types/service-type';
 import { useRouter } from 'next/navigation';
 import { getDaysLeft } from '@/lib/utils';
+import SubstitutionModal from './substitution-modal';
+import { ExtensionModal } from './extension-modal';
 
 
 const ActiveOrdersTab: React.FC = () => {
@@ -318,78 +320,16 @@ const ActiveOrdersTab: React.FC = () => {
 
       {/* Extension Modal Preview */}
       {showExtensionModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Request Extension</h3>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-blue-900">
-                <span className="font-semibold">Service Order:</span> {selectedOrder.id}
-              </p>
-              <p className="text-sm text-blue-900">
-                <span className="font-semibold">Current End Date:</span> {selectedOrder.current_end_date}
-              </p>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Extension request form would go here with fields for additional man days, new end date, justification, etc.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowExtensionModal(false)}
-                className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setShowExtensionModal(false);
-                  // In real app: Navigate to extension request page
-                  // router.push(`/service-orders/${selectedOrder.id}/request-extension`)
-                }}
-                className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Continue to Form
-              </button>
-            </div>
-          </div>
-        </div>
+        <ExtensionModal
+            isOpen={showExtensionModal} 
+            onClose={setShowExtensionModal}
+            serviceOrder={selectedOrder}
+        />
       )}
 
       {/* Substitution Modal Preview */}
       {showSubstitutionModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Request Specialist Substitution</h3>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-purple-900">
-                <span className="font-semibold">Service Order:</span> {selectedOrder.id}
-              </p>
-              <p className="text-sm text-purple-900">
-                <span className="font-semibold">Current Specialist:</span> {selectedOrder.current_specialist_name}
-              </p>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Substitution request form would go here with fields for reason, replacement specialist selection, handover period, etc.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowSubstitutionModal(false)}
-                className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setShowSubstitutionModal(false);
-                  // In real app: Navigate to substitution request page
-                  // router.push(`/service-orders/${selectedOrder.id}/request-substitution`)
-                }}
-                className="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium"
-              >
-                Continue to Form
-              </button>
-            </div>
-          </div>
-        </div>
+        <SubstitutionModal />
       )}
     </div>
   );
