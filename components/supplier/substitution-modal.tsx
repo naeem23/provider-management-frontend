@@ -116,38 +116,36 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Substitution request submitted:', {
-        serviceOrder: serviceOrder.id,
-        outgoingSpecialistId: serviceOrder.current_specialist_id,
-        ...formData
-      });
+    try {
+      const response = await fetchWithAuth(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/substitutions/`, 
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            service_order: serviceOrder.id,
+            initiated_by: 'SUPPLIER_REPRESENTATIVE',
+            outgoing_specialist_id: serviceOrder.current_specialist_id,
+            outgoing_specialist_name: formData.outgoingSpecialistName,
+            incoming_specialist_id: formData.incomingSpecialistId,
+            incoming_specialist_name: formData.incomingSpecialistName,
+            incoming_specialist_daily_rate: formData.incomingSpecialistDailyRate,
+            reason: formData.reason
+          })
+        }
+      );
 
-      // In real app:
-      // const response = await fetch('/api/substitutions/', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     service_order: serviceOrder.serviceOrderId,
-      //     initiated_by: 'SUPPLIER_REPRESENTATIVE',
-      //     initiator_name: currentUser.name,
-      //     outgoing_specialist_id: serviceOrder.currentSpecialistId,
-      //     outgoing_specialist_name: formData.outgoingSpecialistName,
-      //     incoming_specialist_id: formData.incomingSpecialistId,
-      //     incoming_specialist_name: formData.incomingSpecialistName,
-      //     incoming_specialist_daily_rate: formData.incomingSpecialistDailyRate,
-      //     reason: formData.reason,
-      //     detailed_reason: formData.detailedReason,
-      //     handover_period_days: formData.handoverPeriodDays,
-      //     effective_date: formData.effectiveDate
-      //   })
-      // });
-
+      if (response.ok) {
+        alert('Substitution request submitted successfully!');
+      } else {
+        alert('Failed to submit Substitution request!');
+      }
+    } catch (error) {
+      console.log('Error submitting substitution request', error)
+      alert('Network error. Please check your connection and try again.');
+    } finally {
       setIsSubmitting(false);
       onClose(false);
-      alert('Substitution request submitted successfully!');
-    }, 1500);
+    }
   };
 
   if (!isOpen) return null;

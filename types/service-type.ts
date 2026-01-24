@@ -89,6 +89,7 @@ export interface ServiceOrder {
   has_been_substituted: boolean;
   status: string;
   pending_extension_id?: string | null;
+  pending_substitution_id?: string | null;
 }
 
 export interface ExtensionType {
@@ -99,6 +100,23 @@ export interface ExtensionType {
   additional_man_days: number;
   new_end_date: string;
   additional_cost: string;
+  reason: string;
+  rejection_reason: string;
+  created_at: string;
+  updated_at: string;
+  service_order: string;
+}
+
+export interface SubstitutionType {
+  id: string;
+  service_order_title: string;
+  initiated_by: string;
+  status: string;
+  outgoing_specialist_id: string;
+  outgoing_specialist_name: string;
+  incoming_specialist_id: string;
+  incoming_specialist_name: string;
+  incoming_specialist_daily_rate: string;
   reason: string;
   rejection_reason: string;
   created_at: string;

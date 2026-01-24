@@ -16,10 +16,10 @@ import {
 import { ServiceOrder } from '@/types/service-type';
 import { useRouter } from 'next/navigation';
 import { getDaysLeft } from '@/lib/utils';
-import { ExtensionModal } from './extension-request-modal';
 import { SubstitutionModal } from './substitution-modal';
 import { fetchWithAuth } from '@/lib/auth';
 import { ExtensionResponseModal } from './extension-response-modal';
+import { SubstitutionResponseModal } from './substitution-response-modal';
 
 
 const ActiveOrdersTab: React.FC = () => {
@@ -27,6 +27,7 @@ const ActiveOrdersTab: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
   const [showExtensionModal, setShowExtensionModal] = useState(false);
   const [showSubstitutionModal, setShowSubstitutionModal] = useState(false);
+  const [showResponseSubstitutionModal, setShowResponseSubstitutionModal] = useState(false);
   const [activeOrders, setActiveOrders] = useState<ServiceOrder[]>([]);
 
   useEffect(() => {
@@ -55,6 +56,11 @@ const ActiveOrdersTab: React.FC = () => {
     setSelectedOrder(order);
     setShowSubstitutionModal(true);
   };
+
+  const handleResponseSubstitution = (order: ServiceOrder) => {
+    setSelectedOrder(order);
+    setShowResponseSubstitutionModal(true);
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -248,17 +254,27 @@ const ActiveOrdersTab: React.FC = () => {
                     onClick={() => handleRequestExtension(order)}
                     className="flex-1 flex items-center justify-center bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
-                    <TrendingUp className="w-4 h-4 mr-2" />
+                        <TrendingUp className="w-4 h-4 mr-2" />
                         Approve/Reject Extension
                     </button>
                 )}
-                <button
-                  onClick={() => handleRequestSubstitution(order)}
-                  className="flex-1 flex items-center justify-center bg-purple-600 text-white px-4 py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Request Substitution
-                </button>
+                {order?.pending_substitution_id ? (
+                    <button
+                    onClick={() => handleResponseSubstitution(order)}
+                    className="flex-1 flex items-center justify-center bg-purple-600 text-white px-4 py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                    >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Approv/Rejct Substitution
+                    </button>
+                ) : (
+                    <button
+                    onClick={() => handleRequestSubstitution(order)}
+                    className="flex-1 flex items-center justify-center bg-purple-600 text-white px-4 py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                    >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Request Substitution
+                    </button>
+                )}
               </div>
             </div>
           ))}
@@ -272,6 +288,15 @@ const ActiveOrdersTab: React.FC = () => {
             isOpen={showExtensionModal} 
             onClose={setShowExtensionModal}
         />
+      )}
+      
+      {/* Substitution Modal Preview */}
+      {showResponseSubstitutionModal && selectedOrder?.pending_substitution_id  && (
+        <SubstitutionResponseModal
+            subsId={selectedOrder.pending_substitution_id}
+            isOpen={showResponseSubstitutionModal} 
+            onClose={setShowResponseSubstitutionModal}
+         />
       )}
 
       {/* Substitution Modal Preview */}
