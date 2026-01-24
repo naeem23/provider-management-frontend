@@ -61,3 +61,31 @@ export interface FlowableTask {
   created_time: string;
   service_request: ServiceRequest
 }
+
+export interface ServiceOrder {
+  id: string;
+  title: string;
+  // service_request_id: string;
+  // winning_offer_id: string;
+  // contract_id: string | null;
+  supplier_name: string;
+  current_specialist_id: string;
+  current_specialist_name: string;
+  original_specialist_id: string;
+  original_specialist_name: string;
+  role: string;
+  // domain: string;
+  start_date: string;
+  current_end_date: string;
+  original_end_date: string;
+  // actual_end_date: string;
+  current_man_days: number;
+  consumed_man_days: number;
+  remaining_man_days: number;
+  daily_rate: number;
+  current_contract_value: number;
+  original_contract_value: number;
+  has_been_extended: boolean;
+  has_been_substituted: boolean;
+  status: string;
+}

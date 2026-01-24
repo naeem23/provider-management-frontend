@@ -6,6 +6,7 @@ import EmptyState from '../empty-state';
 import OffersTab from './offers-tab';
 import SpecialistsTab from './specialists-tab';
 import { FlowableTask } from '@/types/service-type';
+import ActiveOrdersTab from './active-order-tab';
 
 interface TabContentProps {
   activeTab: TabType;
@@ -48,18 +49,7 @@ const TabContent: React.FC<TabContentProps> = ({
       )}
 
       {activeTab === 'active-orders' && (
-        // <div>
-        //   <h3 className="text-xl font-bold text-gray-900 mb-6">Active Service Orders</h3>
-        //   <div className="space-y-4">
-        //     {activeOrders.map((order) => (
-        //       <OrderCard key={order.id} order={order} />
-        //     ))}
-        //   </div>
-        // </div>
-        <EmptyState 
-          icon={FileText} 
-          message="No active orders found." 
-        />
+        <ActiveOrdersTab />
       )}
 
       {activeTab === 'specialists' && (
