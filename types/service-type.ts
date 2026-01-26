@@ -59,6 +59,7 @@ export interface FlowableTask {
   task_id: string;
   task_name: string;
   created_time: string;
+  provider_ids?: string[];
   service_request: ServiceRequest
 }
 

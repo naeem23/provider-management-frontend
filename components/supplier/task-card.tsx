@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock, AlertCircle, Calendar, MapPin, Briefcase } from 'lucide-react';
 import { FlowableTask } from '@/types/service-type';
-import { getDaysLeft } from '@/lib/utils';
+import { getDaysLeft, getUserFromStorage } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 interface TaskCardProps {
@@ -11,11 +11,13 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onSubmitOffer }) => {
   const router = useRouter()
+  const user = getUserFromStorage();
 
   const serviceRequest = task?.service_request;
   // Parse criteria_json to extract skills, languages, certifications
   const criteria = serviceRequest?.criteria_json;
   const skills = criteria?.skills || [];
+  const alreadySubmitted = task?.provider_ids && user?.provider_id && task?.provider_ids.includes(user?.provider_id) || false;
 
   const getExperienceBadgeColor = (level: string) => {
     switch (level) {
@@ -118,9 +120,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onSubmitOffer }) => {
           {/* Action Button */}
           <button 
             onClick={() => router.push(`/dashboard/service-request/${serviceRequest.id}/tasks/${task.task_id}`)}
-            className="shrink-0 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap h-fit cursor-pointer"
+            className={`shrink-0 text-white px-6 py-2 rounded-lg transition-colors font-medium whitespace-nowrap h-fit ${alreadySubmitted ? "disabled:cursor-none disabled:bg-gray-600" : "bg-blue-600 hover:bg-blue-700 cursor-pointer"}`}
+            disabled={alreadySubmitted}
           >
-            Submit Offer
+            { alreadySubmitted ? "Submitted" : "Submit Offer" }
           </button>
         </div>
       </div>

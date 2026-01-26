@@ -310,6 +310,7 @@ const SubmitOfferPage: React.FC = () => {
           offerId={offerId}
           requestId={serviceRequest?.id}
           totalCost={offer.total_cost}
+          closeModal={setShowSuccessModal}
         />
       )}
     </div>

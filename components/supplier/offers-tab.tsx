@@ -6,11 +6,11 @@ import { FileText } from 'lucide-react';
 
 export interface MyOfferType {
   id: string;
-  service_request_id: string;
-  service_request_code: string;
+  request_id: string;
+  request_title: string;
+  request_duration: string;
   role_name: string;
   provider_id: string;
-  provider_code: string;
   provider_name: string;
   specialist_id: string;
   specialist_name: string;

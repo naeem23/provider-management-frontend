@@ -10,13 +10,18 @@ interface SubmitOfferResponseModalProps {
     offerId: string;
     requestId: string;
     totalCost: number;
+    closeModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SubmitOfferResponseModal = ({ modalMessage, specialistName, offerId, requestId, totalCost } : SubmitOfferResponseModalProps) => {
+const SubmitOfferResponseModal = ({ modalMessage, specialistName, offerId, requestId, totalCost, closeModal } : SubmitOfferResponseModalProps) => {
   const router = useRouter();
   
   const goBack = () => {
-    router.push(`/dashboard`)
+    if (modalMessage?.type === 'success') {
+        router.push(`/dashboard`)
+    } else {
+        closeModal(false)
+    }
   };
 
   return (
