@@ -1,36 +1,144 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Provider Management Frontend
 
-## Getting Started
+Next.js frontend application for the Provider Management Tool with role-based interfaces for Provider Admins, Supplier Representatives, and Contract Coordinators.
 
-First, run the development server:
+## Tech Stack
+
+- Next.js 16
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Radix UI Components
+- Lucide React Icons
+
+## Prerequisites
+
+- Node.js 20+ and npm
+- Backend API running at `http://localhost:8000`
+
+## Installation & Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment Configuration
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api
+NEXT_PUBLIC_GROUP3C_API_BASE_URL=http://localhost:8000/api
+```
+
+### 3. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build & Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Production build
+npm run build
 
-## Learn More
+# Start production server
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## User Roles & Interfaces
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Provider Admin
+- User management
+- Specialist profile management
+- Audit log viewer
+- Organization settings
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Supplier Representative
+- View service request tasks (from Flowable)
+- Submit offers with specialist selection
+- Manage active service orders
+- Handle extensions and substitutions
 
-## Deploy on Vercel
+### Contract Coordinator
+- Review contract drafts
+- Negotiate terms (accept/reject/counter-offer)
+- Track contract versions
+- Monitor expiring contracts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API Integration
+
+The frontend communicates with the Django backend via REST APIs:
+
+```typescript
+// Example: Fetch service requests
+const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/service-requests/`, {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+## Authentication
+
+The app uses JWT authentication:
+
+1. User logs in → receives access & refresh tokens
+2. Access token stored in memory/localStorage
+3. Token included in all API requests
+4. Automatic token refresh when expired
+
+## Styling
+
+Uses Tailwind CSS with custom configuration:
+
+```bash
+# Tailwind classes are utility-first
+<div className="flex items-center gap-4 p-6 bg-white rounded-lg shadow">
+```
+
+## Troubleshooting
+
+### API Connection Issues
+
+Ensure backend is running:
+```bash
+curl http://localhost:8000/api/
+```
+
+Check CORS settings in backend if requests fail.
+
+### Build Errors
+
+```bash
+# Clear Next.js cache
+rm -rf .next
+
+# Reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Port Already in Use
+
+```bash
+# Kill process on port 3000
+npx kill-port 3000
+
+# Or use different port
+PORT=3001 npm run dev
+```
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)

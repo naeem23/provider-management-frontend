@@ -69,7 +69,7 @@ const ContractSummaryCard: React.FC<ContractSummaryCardProps> = ({ contract, typ
             )}
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{contract.title}</h2>
-          <p className="text-gray-600">Service Request: {contract.service_request_code}</p>
+          <p className="text-gray-600">Supplier: {contract.provider_name}</p>
         </div>
         {type && type === 'published-only' && contract.status !== 'IN_NEGOTIATION' && (
             <button onClick={handleStartNegotiation} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium cursor-pointer" disabled={isLoading}>

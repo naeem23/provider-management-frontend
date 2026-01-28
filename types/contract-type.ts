@@ -2,8 +2,8 @@
 export interface ContractType {
   id: string;
   provider: string;
+  provider_name: string;
   service_request: string;
-  service_request_code: string;
   specialist?: string;
   specialist_name: string;
   title: string;

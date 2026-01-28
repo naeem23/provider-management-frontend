@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { UserData } from "@/types/user"
-import { AlertTriangle, CheckCircle, CircleX, Clock, FileText, LucideIcon, TrendingUp, Users } from "lucide-react"
+import { AlertTriangle, CheckCircle, CircleX, Clock, FileText, LucideIcon, TrendingUp, Users, X } from "lucide-react"
 import { Metric } from "@/types/dashboard"
 
 export function cn(...inputs: ClassValue[]) {
@@ -89,10 +89,10 @@ const metricConfigs = {
     icon: TrendingUp,
     color: 'bg-orange-500'
   },
-  pending_contracts: {
-    label: 'Pending Approvals',
-    icon: Clock,
-    color: 'bg-yellow-500'
+  rejected_contracts: {
+    label: 'Rejected Contract',
+    icon: X,
+    color: 'bg-red-500'
   },
   active_contracts: {
     label: 'Active Contracts',
@@ -102,7 +102,7 @@ const metricConfigs = {
   expiring_contracts: {
     label: 'Expiring Soon',
     icon: AlertTriangle,
-    color: 'bg-red-500'
+    color: 'bg-yellow-500'
   }
 } as const;
 
