@@ -26,7 +26,7 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
 
   const fetchSubstitutionDetails = async (id: string) => {
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/substitutions/${id}`)
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/${id}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -45,13 +45,13 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
 
     setIsSubmitting(true);
 
-    let url: string = `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/substitutions/${subsId}/approve_substitution/`;
+    let url: string = `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/${subsId}/approve_substitution/`;
     let payload: any = {
       user_role: "SUPPLIER_REP",
     }
 
     if (action === 'reject') {
-      url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/substitutions/${subsId}/reject/`;
+      url = `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/${subsId}/reject/`;
       payload = {
         user_role: "SUPPLIER_REP",
         reason: rejectionReason,

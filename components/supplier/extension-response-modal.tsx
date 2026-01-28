@@ -25,7 +25,7 @@ export const ExtensionResponseModal: React.FC<ExtensionModalProps> = ({ isOpen, 
 
   const fetchExtensionDetails = async (id: string) => {
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/extensions/${id}`)
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/extensions/${id}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -44,13 +44,13 @@ export const ExtensionResponseModal: React.FC<ExtensionModalProps> = ({ isOpen, 
 
     setIsSubmitting(true);
 
-    let url: string = `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/extensions/${extensionId}/approve_extension/`;
+    let url: string = `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/extensions/${extensionId}/approve_extension/`;
     let payload: any = {
       user_role: "SUPPLIER_REP",
     }
 
     if (action === 'reject') {
-      url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/extensions/${extensionId}/reject/`;
+      url = `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/extensions/${extensionId}/reject/`;
       payload = {
         user_role: "SUPPLIER_REP",
         reason: rejectionReason,

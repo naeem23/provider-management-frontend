@@ -118,7 +118,7 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
 
     try {
       const response = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/substitutions/`, 
+        `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/`, 
         {
           method: 'POST',
           body: JSON.stringify({

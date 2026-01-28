@@ -36,7 +36,7 @@ const ActiveOrdersTab: React.FC = () => {
   
   const fetchActieOrders = async () => {
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/service-orders`)
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/service-orders`)
 
       if (response.ok) {
         const data = await response.json()
