@@ -1,9 +1,16 @@
 import React, { useState, useEffect, SetStateAction } from 'react';
-import { X, TrendingUp, Calendar, DollarSign, RefreshCw } from 'lucide-react';
+import { X, TrendingUp, Calendar, DollarSign, RefreshCw, User, Search } from 'lucide-react';
 import { fetchWithAuth } from '@/lib/auth';
 import { ExtensionType, SubstitutionType } from '@/types/service-type';
 import Link from 'next/link';
+import { SpecialistDetails } from '@/types/user';
+import { SpecialistSummary } from './substitution-modal';
 
+interface SubstitutionFormData {
+  incomingSpecialistId: string;
+  incomingSpecialistName: string;
+  incomingSpecialistDailyRate: number | string;
+}
 
 interface ResponseModalProps {
   isOpen: boolean;
@@ -12,10 +19,20 @@ interface ResponseModalProps {
 }
 
 export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen, onClose, subsId }) => {
+  const [formData, setFormData] = useState<SubstitutionFormData>({
+    incomingSpecialistId: '',
+    incomingSpecialistName: '',
+    incomingSpecialistDailyRate: 0,
+  });
+  const [availableSpecialists, setAvailableSpecialists] = useState<SpecialistDetails[]>([]);
   const [substitutionDetails, setSubstitutionDetails] = useState<SubstitutionType | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSpecialistDropdown, setShowSpecialistDropdown] = useState(false);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [rejectionErrors, setRejectionErrors] = useState<string>("");
+  const [selectedSpecialist, setSelectedSpecialist] = useState<SpecialistDetails | null>(null);
 
   // Auto-calculate additional cost when man days change
   useEffect(() => {
@@ -26,7 +43,7 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
 
   const fetchSubstitutionDetails = async (id: string) => {
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/${id}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/${id}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -37,10 +54,45 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
     }
   }
 
+  const handleSpecialistSelect = (specialist: SpecialistDetails) => {
+    setSelectedSpecialist(specialist)
+    setFormData({
+      incomingSpecialistId: specialist.id,
+      incomingSpecialistName: `${specialist.first_name} ${specialist.last_name}`,
+      incomingSpecialistDailyRate: specialist.avg_daily_rate
+    });
+    setSearchTerm(`${specialist.first_name} ${specialist.last_name}`);
+    setShowSpecialistDropdown(false);
+  };
+
+  const removeSpecialistSelect = () => {
+    setSelectedSpecialist(null)
+    setFormData({
+      ...formData,
+      incomingSpecialistId: '',
+      incomingSpecialistName: '',
+      incomingSpecialistDailyRate: 0
+    });
+    setSearchTerm('');
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.incomingSpecialistId) {
+      newErrors.incomingSpecialist = 'Please select a replacement specialist';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (action: string) => {
     if (action === 'reject' && !rejectionReason.trim()){
-      setErrors("Rejection reason is required");
+      setRejectionErrors("Rejection reason is required");
       return
+    } else if (action === 'approv' && !validateForm()) {      
+      return;
     }
 
     setIsSubmitting(true);
@@ -48,6 +100,9 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
     let url: string = `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/${subsId}/approve_substitution/`;
     let payload: any = {
       user_role: "SUPPLIER_REP",
+      incoming_specialist_id: formData.incomingSpecialistId,
+      incoming_specialist_name: formData.incomingSpecialistName,
+      incoming_specialist_daily_rate: formData.incomingSpecialistDailyRate,
     }
 
     if (action === 'reject') {
@@ -59,10 +114,11 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
     }
 
     try {
-      const response = await fetchWithAuth(
+      const response = await fetch(
         url, 
         {
           method: 'POST',
+          headers: {'Content-Type': 'application/json',},
           body: JSON.stringify(payload)
         }
       );
@@ -114,19 +170,97 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
               <span className="font-semibold">Current Specialist (Outgoing):</span> 
               <Link className='group-hover:cursor-pointer' href={`/dashboard/specialists/${substitutionDetails.outgoing_specialist_id}`}>{substitutionDetails.outgoing_specialist_name}</Link>
             </p>
-            <p className="text-sm text-blue-900 mb-1 group">
+            {/* <p className="text-sm text-blue-900 mb-1 group">
               <span className="font-semibold">Incoming Specialist:</span> 
               <Link className='group-hover:cursor-pointer' href={`/dashboard/specialists/${substitutionDetails.incoming_specialist_id}`}>{substitutionDetails.incoming_specialist_name}</Link>
             </p>
             <p className="text-sm text-blue-900 mb-1">
               <span className="font-semibold">Incoming Specialist Daily Rate:</span> €{substitutionDetails.incoming_specialist_daily_rate}
-            </p>
+            </p> */}
             <p className="text-sm text-blue-900 mb-1">
               <span className="font-semibold">Reason For Substitution:</span> {substitutionDetails.reason}
             </p>
           </div>
 
           {/* Form Fields */}
+          <div className="space-y-5">
+            {/* Incoming Specialist (Searchable Select) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Replacement Specialist *
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setShowSpecialistDropdown(true);
+                  }}
+                  onFocus={() => setShowSpecialistDropdown(true)}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    errors.incomingSpecialist ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Search for specialist..."
+                />
+                
+                {/* Dropdown */}
+                {showSpecialistDropdown && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {availableSpecialists.length === 0 ? (
+                      <div className="p-4 text-center text-gray-500 text-sm">
+                        No specialists found
+                      </div>
+                    ) : (
+                      availableSpecialists.map((specialist) => (
+                        <SpecialistSummary 
+                          key={specialist.id}
+                          specialist={specialist}
+                          onSelect={(s) => {
+                            handleSpecialistSelect(s);
+                          }}
+                        />
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+              {errors.incomingSpecialist && (
+                <p className="text-sm text-red-600 mt-1">{errors.incomingSpecialist}</p>
+              )}
+            </div>
+
+            {selectedSpecialist && (
+              <SpecialistSummary 
+                specialist={selectedSpecialist}
+                onRemove={removeSpecialistSelect}      
+              />
+            )}
+
+            {/* Incoming Specialist Daily Rate */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Replacement Specialist Daily Rate (€) *
+              </label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="number"
+                  value={formData.incomingSpecialistDailyRate || ''}
+                  onChange={(e) => setFormData({ ...formData, incomingSpecialistDailyRate: parseFloat(e.target.value) || 0 })}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Auto-filled when specialist is selected"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Auto-filled with specialist's average rate, but can be adjusted
+              </p>
+            </div>
+          </div>
+
           <div className="space-y-5">
             {/* Reason */}
             <div>
@@ -138,12 +272,12 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={4}
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors ? 'border-red-500' : 'border-gray-300'
+                  rejectionErrors ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Provide detailed reason for rejecting extension..."
               />
-              {errors && (
-                <p className="text-sm text-red-600 mt-1">{errors}</p>
+              {rejectionErrors && (
+                <p className="text-sm text-red-600 mt-1">{rejectionErrors}</p>
               )}
               <p className="text-xs text-gray-500 mt-1">
                 {rejectionReason.length} characters

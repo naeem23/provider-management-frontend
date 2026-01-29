@@ -25,7 +25,7 @@ export const ExtensionResponseModal: React.FC<ExtensionModalProps> = ({ isOpen, 
 
   const fetchExtensionDetails = async (id: string) => {
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/extensions/${id}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/extensions/${id}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -58,10 +58,11 @@ export const ExtensionResponseModal: React.FC<ExtensionModalProps> = ({ isOpen, 
     }
 
     try {
-      const response = await fetchWithAuth(
+      const response = await fetch(
         url, 
         {
           method: 'POST',
+          headers: {'Content-Type': 'application/json',},
           body: JSON.stringify(payload)
         }
       );

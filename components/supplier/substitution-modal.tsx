@@ -117,10 +117,11 @@ export const SubstitutionModal: React.FC<SubstitutionModalProps> = ({ isOpen, on
     setIsSubmitting(true);
 
     try {
-      const response = await fetchWithAuth(
+      const response = await fetch(
         `${process.env.NEXT_PUBLIC_GROUP3C_API_BASE_URL}/orders/substitutions/`, 
         {
           method: 'POST',
+          headers: {'Content-Type': 'application/json',},
           body: JSON.stringify({
             service_order: serviceOrder.id,
             initiated_by: 'SUPPLIER_REPRESENTATIVE',
@@ -346,7 +347,7 @@ interface SelectedSpecialistSummaryProps {
   onRemove?: () => void;
   onSelect?: (specialist: SpecialistDetails) => void;
 }
-const SpecialistSummary = ({ specialist, onRemove, onSelect }: SelectedSpecialistSummaryProps) => {
+export const SpecialistSummary = ({ specialist, onRemove, onSelect }: SelectedSpecialistSummaryProps) => {
   return (
     <div
       onClick={() => onSelect && onSelect(specialist)}
