@@ -33,6 +33,36 @@ export const SubstitutionResponseModal: React.FC<ResponseModalProps> = ({ isOpen
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [rejectionErrors, setRejectionErrors] = useState<string>("");
   const [selectedSpecialist, setSelectedSpecialist] = useState<SpecialistDetails | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setAvailableSpecialists([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      searchSpeacialist(searchTerm);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+  
+  const searchSpeacialist = async (query: string) => {
+    setIsSearching(true);
+
+    try {
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_BASE_URL}/specialists/specialists?q=${query}`);
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableSpecialists(data);
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   // Auto-calculate additional cost when man days change
   useEffect(() => {
